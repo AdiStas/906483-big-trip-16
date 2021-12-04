@@ -1,4 +1,4 @@
-import {renderTemplate, RenderPosition} from './render';
+import {renderTemplate} from './render';
 import {createSiteMenuTemplate} from './view/site-menu-view';
 import {createFilterTemplate} from './view/filter-view';
 import {createSortTemplate} from './view/sorting-view';
@@ -12,19 +12,19 @@ const siteHeaderElement = document.querySelector('.page-header');
 const siteNavElement = siteHeaderElement.querySelector('.trip-controls__navigation');
 const siteFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
 
-renderTemplate(siteNavElement, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteFilterElement, createFilterTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(siteNavElement, createSiteMenuTemplate());
+renderTemplate(siteFilterElement, createFilterTemplate());
 
 const siteMainElement = document.querySelector('.page-main');
 const pageMainContentElement = siteMainElement.querySelector('.trip-events');
 
-renderTemplate(pageMainContentElement, createSortTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(pageMainContentElement, createEventsListTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(pageMainContentElement, createSortTemplate());
+renderTemplate(pageMainContentElement, createEventsListTemplate());
 
 const eventsListElement = pageMainContentElement.querySelector('.trip-events__list');
 
-renderTemplate(eventsListElement, createEventEditTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(eventsListElement, createEventEditTemplate());
 
 for (let i = 0; i < EVENT_COUNT; i++) {
-  renderTemplate(eventsListElement, createEventTemplate(), RenderPosition.BEFOREEND);
+  renderTemplate(eventsListElement, createEventTemplate());
 }

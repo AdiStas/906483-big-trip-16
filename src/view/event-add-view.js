@@ -1,3 +1,132 @@
+const eventTypes = [
+  {
+    name: 'taxi',
+    title: 'Taxi',
+    checked: '',
+  },
+  {
+    name: 'bus',
+    title: 'Bus',
+    checked: '',
+  },
+  {
+    name: 'train',
+    title: 'Train',
+    checked: '',
+  },
+  {
+    name: 'ship',
+    title: 'Ship',
+    checked: '',
+  },
+  {
+    name: 'drive',
+    title: 'Drive',
+    checked: '',
+  },
+  {
+    name: 'flight',
+    title: 'Flight',
+    checked: 'checked',
+  },
+  {
+    name: 'check-in',
+    title: 'Check-in',
+    checked: '',
+  },
+  {
+    name: 'sightseeing',
+    title: 'Sightseeing',
+    checked: '',
+  },
+  {
+    name: 'restaurant',
+    title: 'Restaurant',
+    checked: '',
+  },
+];
+const eventOfferSelectors = [
+  {
+    name: 'luggage',
+    title: 'Add luggage',
+    checked: 'checked',
+    price: '50',
+  },
+  {
+    name: 'comfort',
+    title: 'Switch to comfort',
+    checked: 'checked',
+    price: '80',
+  },
+  {
+    name: 'meal',
+    title: 'Add meal',
+    checked: '',
+    price: '15',
+  },
+  {
+    name: 'seats',
+    title: 'Choose seats',
+    checked: '',
+    price: '5',
+  },
+  {
+    name: 'train',
+    title: 'Travel by train',
+    checked: '',
+    price: '40',
+  },
+];
+const eventPhotos = ['1', '2', '3', '4', '5'];
+
+const createEventItems = eventTypes
+  .map((item) => (
+    `<div class="event__type-item">
+      <input
+        id="event-type-${item.name}-1"
+        class="event__type-input  visually-hidden"
+        type="radio"
+        name="event-type"
+        value="${item.name}"
+        ${item.checked}>
+      <label
+        class="event__type-label  event__type-label--${item.name}"
+        for="event-type-${item.name}-1">
+        ${item.title}
+      </label>
+    </div>`))
+  .join('');
+
+const createEventOfferSelectors = eventOfferSelectors
+  .map((item) => (
+    `<div class="event__offer-selector">
+      <input
+        class="event__offer-checkbox  visually-hidden"
+        id="event-offer-${item.name}-1"
+        type="checkbox"
+        name="event-offer-${item.name}"
+        ${item.checked}>
+      <label
+        class="event__offer-label"
+        for="event-offer-${item.name}-1">
+        <span
+          class="event__offer-title">
+          ${item.title}
+        </span>
+        &plus;&euro;&nbsp;
+        <span
+          class="event__offer-price">
+          ${item.price}
+        </span>
+      </label>
+    </div>`))
+  .join('');
+
+const createEventPhotos = eventPhotos
+  .map((item ) => (
+    `<img class="event__photo" src="img/photos/${item}.jpg" alt="Event photo">`
+  ))
+  .join('');
 export const createEventAddTemplate = () => (
   `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -12,51 +141,7 @@ export const createEventAddTemplate = () => (
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-
-                        <div class="event__type-item">
-                          <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                          <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                          <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                          <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                          <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                          <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                          <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                          <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                          <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                          <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                        </div>
+                          ${createEventItems}
                       </fieldset>
                     </div>
                   </div>
@@ -97,50 +182,7 @@ export const createEventAddTemplate = () => (
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                     <div class="event__available-offers">
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-                        <label class="event__offer-label" for="event-offer-luggage-1">
-                          <span class="event__offer-title">Add luggage</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">30</span>
-                        </label>
-                      </div>
-
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
-                        <label class="event__offer-label" for="event-offer-comfort-1">
-                          <span class="event__offer-title">Switch to comfort class</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">100</span>
-                        </label>
-                      </div>
-
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-                        <label class="event__offer-label" for="event-offer-meal-1">
-                          <span class="event__offer-title">Add meal</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">15</span>
-                        </label>
-                      </div>
-
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
-                        <label class="event__offer-label" for="event-offer-seats-1">
-                          <span class="event__offer-title">Choose seats</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">5</span>
-                        </label>
-                      </div>
-
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
-                        <label class="event__offer-label" for="event-offer-train-1">
-                          <span class="event__offer-title">Travel by train</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">40</span>
-                        </label>
-                      </div>
+                      ${createEventOfferSelectors}
                     </div>
                   </section>
 
@@ -150,11 +192,7 @@ export const createEventAddTemplate = () => (
 
                     <div class="event__photos-container">
                       <div class="event__photos-tape">
-                        <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-                        <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-                        <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-                        <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-                        <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+                        ${createEventPhotos}
                       </div>
                     </div>
                   </section>
