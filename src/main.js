@@ -1,3 +1,4 @@
+import {EVENT_COUNT} from './const';
 import {renderTemplate} from './render';
 import {createSiteMenuTemplate} from './view/site-menu-view';
 import {createFilterTemplate} from './view/filter-view';
@@ -5,8 +6,9 @@ import {createSortTemplate} from './view/sorting-view';
 import {createEventsListTemplate} from './view/events-list-view';
 import {createEventTemplate} from './view/event-view';
 import {createEventEditTemplate} from './view/event-edit-view';
+import {generateEventPoint} from './mock/event-point';
 
-const EVENT_COUNT = 3;
+const eventPoint = Array.from({length: EVENT_COUNT}, generateEventPoint);
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteNavElement = siteHeaderElement.querySelector('.trip-controls__navigation');
@@ -23,8 +25,8 @@ renderTemplate(pageMainContentElement, createEventsListTemplate());
 
 const eventsListElement = pageMainContentElement.querySelector('.trip-events__list');
 
-renderTemplate(eventsListElement, createEventEditTemplate());
+renderTemplate(eventsListElement, createEventEditTemplate(eventPoint[0]));
 
-for (let i = 0; i < EVENT_COUNT; i++) {
-  renderTemplate(eventsListElement, createEventTemplate());
+for (let i = 1; i < EVENT_COUNT; i++) {
+  renderTemplate(eventsListElement, createEventTemplate(eventPoint[i]));
 }
