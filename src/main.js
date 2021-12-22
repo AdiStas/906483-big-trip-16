@@ -13,16 +13,18 @@ const eventPoints = Array.from({length: EVENT_COUNT}, generateEventPoint);
 const siteHeaderElement = document.querySelector('.page-header');
 const siteNavElement = siteHeaderElement.querySelector('.trip-controls__navigation');
 const siteFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
+const siteMainElement = document.querySelector('.page-main');
+const siteMainContentElement = siteMainElement.querySelector('.trip-events');
+const eventsListComponent = new EventsListView();
 
-const renderEventPoint = (eventListElement, eventPoint) => {
+const renderEventPoint = (eventsListElement, eventPoint) => {
   const eventPointComponent = new EventView(eventPoint);
   const eventPointEditComponent = new EventEditView(eventPoint);
-
   const replaceEventPointToForm = () => {
-    eventListElement.replaceChild(eventPointEditComponent.element, eventPointComponent.element);
+    eventsListElement.replaceChild(eventPointEditComponent.element, eventPointComponent.element);
   };
   const replaceFormToEventPoint = () => {
-    eventListElement.replaceChild(eventPointComponent.element, eventPointEditComponent.element);
+    eventsListElement.replaceChild(eventPointComponent.element, eventPointEditComponent.element);
   };
   const onEscKeyDown = (evt) => {
     if (evt.key === KEYCODE.ESCAPE || evt.key === KEYCODE.ESC) {
@@ -39,18 +41,13 @@ const renderEventPoint = (eventListElement, eventPoint) => {
     evt.preventDefault();
     replaceFormToEventPoint();
   });
-  render(eventListElement, eventPointComponent.element);
+  render(eventsListElement, eventPointComponent.element);
 };
 
 render(siteNavElement, new SiteMenuView().element);
 render(siteFilterElement, new FilterView().element);
-
-const siteMainElement = document.querySelector('.page-main');
-const pageMainContentElement = siteMainElement.querySelector('.trip-events');
-const eventsListComponent = new EventsListView();
-
-render(pageMainContentElement, new SortingView().element);
-render(pageMainContentElement, eventsListComponent.element);
+render(siteMainContentElement, new SortingView().element);
+render(siteMainContentElement, eventsListComponent.element);
 
 for (let i = 0; i < EVENT_COUNT; i++) {
   renderEventPoint(eventsListComponent.element, eventPoints[i]);
