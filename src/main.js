@@ -37,6 +37,9 @@ const renderEventPoint = (eventsListElement, eventPoint) => {
     replaceEventPointToForm();
     document.addEventListener('keydown', onEscKeyDown);
   });
+  eventPointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceFormToEventPoint();
+  });
   eventPointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
     evt.preventDefault();
     replaceFormToEventPoint();
