@@ -1,3 +1,5 @@
+import {createElement} from '../render';
+
 const filterItems = [
   {
     name: 'everything',
@@ -32,9 +34,29 @@ const createFilterItems = filterItems
       </label>
     </div>`))
   .join('');
-export const createFilterTemplate = () => (
+const createFilterTemplate = () => (
   `<form class="trip-filters" action="#" method="get">
     ${createFilterItems}
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>`
 );
+
+export default class FilterView {
+  #element = null;
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilterTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

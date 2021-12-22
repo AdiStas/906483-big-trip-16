@@ -1,3 +1,5 @@
+import {createElement} from '../render';
+
 const sortItems = [
   {
     name: 'day',
@@ -44,8 +46,28 @@ const createSortItems = sortItems
     </div>`))
   .join('');
 
-export const createSortTemplate = () => (
+const createSortTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
      ${createSortItems}
   </form>`
 );
+
+export default class SortingView {
+  #element = null;
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createSortTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
