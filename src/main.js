@@ -8,11 +8,18 @@ import EventsListView from './view/events-list-view';
 import EventView from './view/event-view';
 import EventEditView from './view/event-edit-view';
 
-const eventPoint = Array.from({length: EVENT_COUNT}, generateEventPoint);
+const eventPoints = Array.from({length: EVENT_COUNT}, generateEventPoint);
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteNavElement = siteHeaderElement.querySelector('.trip-controls__navigation');
 const siteFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
+
+const renderEventPoint = (eventListElement, eventPoint) => {
+  const eventPointComponent = new EventView(eventPoint);
+  const eventPointEditComponent = new EventEditView(eventPoint);
+
+  render(eventListElement, eventPointComponent.element);
+};
 
 render(siteNavElement, new SiteMenuView().element);
 render(siteFilterElement, new FilterView().element);
@@ -23,8 +30,7 @@ const eventsListComponent = new EventsListView();
 
 render(pageMainContentElement, new SortingView().element);
 render(pageMainContentElement, eventsListComponent.element);
-render(eventsListComponent.element, new EventEditView(eventPoint[0]).element);
 
-for (let i = 1; i < EVENT_COUNT; i++) {
-  render(eventsListComponent.element, new EventView(eventPoint[i]).element);
+for (let i = 0; i < EVENT_COUNT; i++) {
+  renderEventPoint(eventsListComponent.element, eventPoints[i]);
 }

@@ -14,7 +14,6 @@ export default class SiteMenuView {
     if (!this.#element) {
       this.#element = createElement(this.template);
     }
-    console.log(this.#element);
     return this.#element;
   }
 
