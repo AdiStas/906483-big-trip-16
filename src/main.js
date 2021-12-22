@@ -1,4 +1,4 @@
-import {EVENT_COUNT} from './const';
+import {EVENT_COUNT, KEYCODE} from './const';
 import {render} from './render';
 import {generateEventPoint} from './mock/event-point';
 import SiteMenuView from './view/site-menu-view';
@@ -18,6 +18,27 @@ const renderEventPoint = (eventListElement, eventPoint) => {
   const eventPointComponent = new EventView(eventPoint);
   const eventPointEditComponent = new EventEditView(eventPoint);
 
+  const replaceEventPointToForm = () => {
+    eventListElement.replaceChild(eventPointEditComponent.element, eventPointComponent.element);
+  };
+  const replaceFormToEventPoint = () => {
+    eventListElement.replaceChild(eventPointComponent.element, eventPointEditComponent.element);
+  };
+  const onEscKeyDown = (evt) => {
+    if (evt.key === KEYCODE.ESCAPE || evt.key === KEYCODE.ESC) {
+      evt.preventDefault();
+      replaceFormToEventPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+  eventPointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceEventPointToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
+  eventPointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceFormToEventPoint();
+  });
   render(eventListElement, eventPointComponent.element);
 };
 
