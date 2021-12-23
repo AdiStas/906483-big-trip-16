@@ -80,3 +80,7 @@ export const OFFERS = [
     price: '40',
   },
 ];
+export const KEYCODE = {
+  ESCAPE: 'Escape',
+  ESC: 'Esc',
+};

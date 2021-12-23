@@ -1,4 +1,5 @@
 import {getDateByFormat, calculateDatesDiff} from '../utils';
+import {createElement} from '../render';
 
 const createEventOffersTemplate = (offers) => offers.map((item) => (
   `<li class="event__offer">
@@ -8,7 +9,7 @@ const createEventOffersTemplate = (offers) => offers.map((item) => (
       </li>`
 )).join('');
 
-export const createEventTemplate = (eventPoint) => {
+const createEventTemplate = (eventPoint) => {
   const {
     price,
     dateFrom,
@@ -58,3 +59,28 @@ export const createEventTemplate = (eventPoint) => {
   </li>`
   );
 };
+
+export default class EventView {
+  #element = null;
+  #eventPoint = null;
+
+  constructor(eventPoint) {
+    this.#eventPoint = eventPoint;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createEventTemplate(this.#eventPoint);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
