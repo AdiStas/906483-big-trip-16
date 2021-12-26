@@ -1,5 +1,5 @@
 import {getDateByFormat, calculateDatesDiff} from '../utils';
-import {createElement} from '../render';
+import AbstractView from './abstract-view';
 
 const createEventOffersTemplate = (offers) => offers.map((item) => (
   `<li class="event__offer">
@@ -60,27 +60,15 @@ const createEventTemplate = (eventPoint) => {
   );
 };
 
-export default class EventView {
-  #element = null;
+export default class EventView extends AbstractView{
   #eventPoint = null;
 
   constructor(eventPoint) {
+    super();
     this.#eventPoint = eventPoint;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createEventTemplate(this.#eventPoint);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,6 +1,6 @@
 import {TYPES, DESTINATIONS} from '../const.js';
 import {getDateByFormat} from '../utils';
-import {createElement} from '../render';
+import AbstractView from './abstract-view';
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
   item.checked = item.title.toLowerCase() === type.title.toLowerCase() ? 'checked' : '';
@@ -136,27 +136,15 @@ export const createEventEditTemplate = (eventPoint = {}) => {
   </li>`;
 };
 
-export default class EventEditView {
-  #element = null;
+export default class EventEditView extends AbstractView {
   #eventPoint = null;
 
   constructor(eventPoint) {
+    super();
     this.#eventPoint = eventPoint;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createEventEditTemplate(this.#eventPoint);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
