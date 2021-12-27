@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {DESCRIPTIONS, DESTINATIONS, OFFERS, TYPES,} from '../const.js';
-import {getRandomInteger} from '../utils';
+import {getRandomInteger} from '../utils/common';
 
 const generateDescription = () => {
   const descriptionsList = [];
