@@ -147,4 +147,24 @@ export default class EventEditView extends AbstractView {
   get template() {
     return createEventEditTemplate(this.#eventPoint);
   }
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setEditCloseClickHandler = (callback) => {
+    this._callback.formClose = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editCloseClickHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  #editCloseClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formClose();
+  }
 }

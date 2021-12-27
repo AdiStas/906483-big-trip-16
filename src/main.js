@@ -33,15 +33,14 @@ const renderEventPoint = (eventsListElement, eventPoint) => {
       document.removeEventListener('keydown', onEscKeyDown);
     }
   };
-  eventPointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  eventPointComponent.setEditClickHandler(() => {
     replaceEventPointToForm();
     document.addEventListener('keydown', onEscKeyDown);
   });
-  eventPointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  eventPointEditComponent.setEditCloseClickHandler(() => {
     replaceFormToEventPoint();
   });
-  eventPointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  eventPointEditComponent.setFormSubmitHandler(() => {
     replaceFormToEventPoint();
   });
   render(eventsListElement, eventPointComponent.element);
