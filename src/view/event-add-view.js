@@ -1,6 +1,6 @@
 import {TYPES, DESTINATIONS} from '../const.js';
 import {getDateByFormat} from '../utils';
-import {createElement} from '../render';
+import AbstractView from './abstract-view';
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
   item.checked = item.title.toLowerCase() === type.title.toLowerCase() ? 'checked' : '';
@@ -149,27 +149,25 @@ const createEventAddTemplate = (eventPoint = {}) => {
   </li>`;
 };
 
-export default class EventAddView {
-  #element = null;
+export default class EventAddView extends AbstractView {
   #eventPoint = null;
 
   constructor(eventPoint) {
+    super();
     this.#eventPoint = eventPoint;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createEventAddTemplate(this.#eventPoint);
   }
 
-  removeElement() {
-    this.#element = null;
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 }
