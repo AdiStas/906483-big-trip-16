@@ -1,6 +1,5 @@
 import AbstractView from './abstract-view';
 
-
 const sortItems = [
   {
     name: 'day',
