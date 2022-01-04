@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {DESCRIPTIONS, DESTINATIONS, OFFERS, TYPES,} from '../const.js';
 import {getRandomInteger} from '../utils/common';
+import {nanoid} from 'nanoid';
 
 const generateDescription = () => {
   const descriptionsList = [];
@@ -37,6 +38,7 @@ const generateDate = (type) => {
   }
 };
 export const generateEventPoint = () => ({
+  id: nanoid(),
   price: getRandomInteger(1, 100),
   dateFrom: generateDate('start'),
   dateTo: generateDate('end'),
