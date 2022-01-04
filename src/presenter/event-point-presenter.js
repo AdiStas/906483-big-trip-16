@@ -5,14 +5,16 @@ import EventEditView from '../view/event-edit-view';
 
 export default class EventPointPresenter {
   #eventPointListContainer = null;
+  #changeData = null;
 
   #eventPointComponent = null;
   #eventPointEditComponent = null;
 
   #eventPoint = null;
 
-  constructor(eventPointListContainer) {
+  constructor(eventPointListContainer, changeData) {
     this.#eventPointListContainer = eventPointListContainer;
+    this.#changeData = changeData;
   }
 
   init = (eventPoint) => {
@@ -25,6 +27,7 @@ export default class EventPointPresenter {
     this.#eventPointEditComponent = new EventEditView(eventPoint);
 
     this.#eventPointComponent.setEditClickHandler(this.#handleEditClick);
+    this.#eventPointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#eventPointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventPointEditComponent.setEditCloseClickHandler(this.#handleEditCloseClick);
 
@@ -70,11 +73,16 @@ export default class EventPointPresenter {
     this.#replaceEventPointToForm();
   }
 
+  #handleFavoriteClick = () => {
+    this.#changeData({...this.#eventPoint, isFavorite: !this.#eventPoint.isFavorite});
+  }
+
   #handleEditCloseClick = () => {
     this.#replaceFormToEventPoint();
   }
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (eventPoint) => {
+    this.#changeData(eventPoint);
     this.#replaceFormToEventPoint();
   }
 }

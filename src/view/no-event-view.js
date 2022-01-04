@@ -5,12 +5,12 @@ import AbstractView from './abstract-view';
 //   * Future — 'There are no future events now'.
 //
 
-const createNoEventPointTemplate = () => (
+const createNoEventTemplate = () => (
   '<p class="trip-events__msg">Click New Event to create your first point</p>'
 );
 
-export default class NoEventPointView extends AbstractView {
+export default class NoEventView extends AbstractView {
   get template() {
-    return createNoEventPointTemplate();
+    return createNoEventTemplate();
   }
 }

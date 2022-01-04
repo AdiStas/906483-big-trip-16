@@ -1,9 +1,10 @@
 import {render, RenderPosition} from '../utils/render';
 import EventsListView from '../view/events-list-view';
 import SortingView from '../view/sorting-view';
-import NoEventPointView from '../view/no-event-point-view';
+import NoEventView from '../view/no-event-view';
 
 import EventPointPresenter from './event-point-presenter';
+import {updateItem} from '../utils/common';
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -11,9 +12,10 @@ export default class TripPresenter {
   #tripComponent = null;
   #sortComponent = new SortingView();
   #eventsListComponent = new EventsListView();
-  #noEventPointComponent = new NoEventPointView()
+  #noEventComponent = new NoEventView()
 
   #eventPoints = [];
+  #eventPresenter = new Map();
 
   constructor(tripContainer, tripComponent) {
     this.#tripContainer = tripContainer;
@@ -28,13 +30,19 @@ export default class TripPresenter {
     this.#renderTrip();
   }
 
+  #handleEventPointChange = (updatedEventPoint) => {
+    this.#eventPoints = updateItem(this.#eventPoints, updatedEventPoint);
+    this.#eventPresenter.get(updatedEventPoint.id).init(updatedEventPoint);
+  }
+
   #renderSort = () => {
     render(this.#tripComponent, this.#sortComponent, RenderPosition.AFTERBEGIN);
   }
 
   #renderEventPoint = (eventPoint) => {
-    const eventPointPresenter = new EventPointPresenter(this.#eventsListComponent);
+    const eventPointPresenter = new EventPointPresenter(this.#eventsListComponent, this.#handleEventPointChange);
     eventPointPresenter.init(eventPoint);
+    this.#eventPresenter.set(eventPoint.id, eventPointPresenter);
   }
 
   #renderEventPoints = () => {
@@ -44,7 +52,12 @@ export default class TripPresenter {
   }
 
   #renderNoEventPoints = () => {
-    render(this.#tripComponent, this.#noEventPointComponent);
+    render(this.#tripComponent, this.#noEventComponent);
+  }
+
+  #clearEventPointsList = () => {
+    this.#eventPresenter.forEach((presenter) => presenter.destroy());
+    this.#eventPresenter.clear();
   }
 
   #renderEventPointsList = () => {
