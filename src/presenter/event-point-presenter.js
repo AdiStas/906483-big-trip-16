@@ -1,4 +1,4 @@
-import {render, replace} from '../utils/render';
+import {remove, render, replace} from '../utils/render';
 import {KEYCODE} from '../const';
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
@@ -18,6 +18,9 @@ export default class EventPointPresenter {
   init = (eventPoint) => {
     this.#eventPoint = eventPoint;
 
+    const prevEventPointComponent = this.#eventPointComponent;
+    const prevEventPointEditComponent = this.#eventPointEditComponent;
+
     this.#eventPointComponent = new EventView(eventPoint);
     this.#eventPointEditComponent = new EventEditView(eventPoint);
 
@@ -25,7 +28,25 @@ export default class EventPointPresenter {
     this.#eventPointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventPointEditComponent.setEditCloseClickHandler(this.#handleEditCloseClick);
 
-    render(this.#eventPointListContainer, this.#eventPointComponent);
+    if (prevEventPointComponent === null || prevEventPointEditComponent === null) {
+      render(this.#eventPointListContainer, this.#eventPointComponent);
+    }
+
+    if (this.#eventPointListContainer.element.contains(prevEventPointComponent?.element)) {
+      replace(this.#eventPointComponent, prevEventPointComponent);
+    }
+
+    if (this.#eventPointListContainer.element.contains(prevEventPointEditComponent?.element)) {
+      replace(this.#eventPointEditComponent, prevEventPointEditComponent);
+    }
+
+    remove(prevEventPointComponent);
+    remove(prevEventPointEditComponent);
+  }
+
+  destroy = () => {
+    remove(this.#eventPointComponent);
+    remove(this.#eventPointEditComponent);
   }
 
   #replaceEventPointToForm = () => {
