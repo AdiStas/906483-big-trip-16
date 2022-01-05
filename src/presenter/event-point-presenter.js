@@ -3,18 +3,26 @@ import {KEYCODE} from '../const';
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
 
+const Mode = {
+  DEFAULT: 'default',
+  EDITING: 'editing',
+};
+
 export default class EventPointPresenter {
   #eventPointListContainer = null;
   #changeData = null;
+  #changeMode = null;
 
   #eventPointComponent = null;
   #eventPointEditComponent = null;
 
   #eventPoint = null;
+  #mode = Mode.DEFAULT;
 
-  constructor(eventPointListContainer, changeData) {
+  constructor(eventPointListContainer, changeData, changeMode) {
     this.#eventPointListContainer = eventPointListContainer;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init = (eventPoint) => {
@@ -33,13 +41,14 @@ export default class EventPointPresenter {
 
     if (prevEventPointComponent === null || prevEventPointEditComponent === null) {
       render(this.#eventPointListContainer, this.#eventPointComponent);
+      return;
     }
 
-    if (this.#eventPointListContainer.element.contains(prevEventPointComponent?.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventPointComponent, prevEventPointComponent);
     }
 
-    if (this.#eventPointListContainer.element.contains(prevEventPointEditComponent?.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#eventPointEditComponent, prevEventPointEditComponent);
     }
 
@@ -52,14 +61,23 @@ export default class EventPointPresenter {
     remove(this.#eventPointEditComponent);
   }
 
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToEventPoint();
+    }
+  }
+
   #replaceEventPointToForm = () => {
     replace(this.#eventPointEditComponent, this.#eventPointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#changeMode();
+    this.#mode = Mode.EDITING;
   };
 
   #replaceFormToEventPoint = () => {
     replace(this.#eventPointComponent, this.#eventPointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   };
 
   #escKeyDownHandler = (evt) => {
