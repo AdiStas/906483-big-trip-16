@@ -84,3 +84,8 @@ export const KEYCODE = {
   ESCAPE: 'Escape',
   ESC: 'Esc',
 };
+export const SORT_TYPE = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+};

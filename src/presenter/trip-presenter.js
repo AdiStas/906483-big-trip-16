@@ -5,6 +5,8 @@ import NoEventView from '../view/no-event-view';
 
 import EventPointPresenter from './event-point-presenter';
 import {updateItem} from '../utils/common';
+import {SORT_TYPE} from '../const';
+import {sortEventPointTime, sortEventPointPrice, sortEventPointDay} from '../utils/event-point';
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -16,6 +18,8 @@ export default class TripPresenter {
 
   #eventPoints = [];
   #eventPresenter = new Map();
+  #currentSortType = SORT_TYPE.DAY;
+  #sourcedEventPoints = [];
 
   constructor(tripContainer, tripComponent) {
     this.#tripContainer = tripContainer;
@@ -23,7 +27,9 @@ export default class TripPresenter {
   }
 
   init = (eventPoints) => {
+    eventPoints.sort(sortEventPointDay);
     this.#eventPoints = [...eventPoints];
+    this.#sourcedEventPoints = [...eventPoints];
 
     render(this.#tripComponent, this.#eventsListComponent);
 
@@ -36,11 +42,37 @@ export default class TripPresenter {
 
   #handleEventPointChange = (updatedEventPoint) => {
     this.#eventPoints = updateItem(this.#eventPoints, updatedEventPoint);
+    this.#sourcedEventPoints = updateItem(this.#sourcedEventPoints, updatedEventPoint);
     this.#eventPresenter.get(updatedEventPoint.id).init(updatedEventPoint);
+  }
+
+  #sortEventPoints = (sortType) => {
+    switch (sortType) {
+      case SORT_TYPE.TIME:
+        this.#eventPoints.sort(sortEventPointTime);
+        break;
+      case SORT_TYPE.PRICE:
+        this.#eventPoints.sort(sortEventPointPrice);
+        break;
+      default:
+        this.#eventPoints = [...this.#sourcedEventPoints];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#sortEventPoints(sortType);
+    this.#clearEventPointsList();
+    this.#renderEventPointsList();
   }
 
   #renderSort = () => {
     render(this.#tripComponent, this.#sortComponent, RenderPosition.AFTERBEGIN);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
   #renderEventPoint = (eventPoint) => {
