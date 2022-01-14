@@ -1,8 +1,8 @@
-import {render, RenderPosition} from '../utils/render';
 import EventsListView from '../view/events-list-view';
 import SortingView from '../view/sorting-view';
 import NoEventView from '../view/no-event-view';
 
+import {render, RenderPosition} from '../utils/render';
 import EventPointPresenter from './event-point-presenter';
 import {updateItem} from '../utils/common';
 import {SORT_TYPE} from '../const';

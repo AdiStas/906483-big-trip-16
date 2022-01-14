@@ -1,6 +1,6 @@
-import {TYPES, DESTINATIONS} from '../const.js';
+import {TYPES, DESTINATIONS, OFFERS} from '../const.js';
 import {getDateByFormat} from '../utils';
-import AbstractView from './abstract-view';
+import SmartView from './smart-view';
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
   item.checked = item.title.toLowerCase() === type.title.toLowerCase() ? 'checked' : '';
@@ -24,13 +24,12 @@ const createEventOffersListTemplate = (offers) => {
     `<div class="event__offer-selector">
       <input
         class="event__offer-checkbox  visually-hidden"
-        id="event-offer-${item.name}-1"
+        id="event-offer-${item.title.toLowerCase()}-1"
         type="checkbox"
-        name="event-offer-${item.name}"
-        ${item.checked}>
+        name="event-offer-${item.title.toLowerCase()}">
       <label
         class="event__offer-label"
-        for="event-offer-${item.name}-1">
+        for="event-offer-${item.title.toLowerCase()}-1">
         <span
           class="event__offer-title">
           ${item.title}
@@ -55,8 +54,30 @@ const createEventOffersListTemplate = (offers) => {
     return '';
   }
 };
-
-const createEventDestinationsListTemplate = () => DESTINATIONS.map((item) => `<option value="${item}"></option>`).join('');
+const createEventDestinationOptionsTemplate = () => DESTINATIONS.map((item) => `<option value="${item.name}"></option>`).join('');
+const createEventPicturesTemplate = (destination) => {
+  if (destination.pictures.length > 0) {
+    const pictures = destination.pictures.map((item) => `<img class="event__photo" src="${item.src}" alt="Event photo">`).join('');
+    return `<div class="event__photos-container">
+              <div class="event__photos-tape">
+                ${pictures}
+              </div>
+            </div>`;
+  } else {
+    return '';
+  }
+};
+const createEventDestinationTemplate = (destination) => {
+  if (destination.description) {
+    return `<section class="event__section  event__section--destination">
+              <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+              <p class="event__destination-description">${destination.description}</p>
+              ${createEventPicturesTemplate(destination)}
+           </section>`;
+  } else {
+    return '';
+  }
+};
 export const createEventEditTemplate = (eventPoint = {}) => {
   const {
     price = '',
@@ -73,7 +94,8 @@ export const createEventEditTemplate = (eventPoint = {}) => {
 
   const eventTypeTemplate = createEventTypesListTemplate(type);
   const eventOfferTemplate = createEventOffersListTemplate(offers);
-  const eventDestinationsTemplate = createEventDestinationsListTemplate();
+  const eventDestinationOptionsTemplate = createEventDestinationOptionsTemplate();
+  const eventDestinationTemplate = createEventDestinationTemplate(destination);
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -99,7 +121,7 @@ export const createEventEditTemplate = (eventPoint = {}) => {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                      ${eventDestinationsTemplate}
+                      ${eventDestinationOptionsTemplate}
                     </datalist>
                   </div>
 
@@ -127,25 +149,33 @@ export const createEventEditTemplate = (eventPoint = {}) => {
                 </header>
                 <section class="event__details">
                   ${eventOfferTemplate}
-                  <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${destination.description}</p>
-                  </section>
+                  ${eventDestinationTemplate}
                 </section>
               </form>
   </li>`;
 };
 
-export default class EventEditView extends AbstractView {
-  #eventPoint = null;
-
+export default class EventEditView extends SmartView {
   constructor(eventPoint) {
     super();
-    this.#eventPoint = eventPoint;
+    this._data = EventEditView.parseEventPointToData(eventPoint);
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createEventEditTemplate(this.#eventPoint);
+    return createEventEditTemplate(this._data);
+  }
+
+  reset = (eventPoint) => {
+    this.updateData(
+      EventEditView.parseEventPointToData(eventPoint),
+    );
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEditCloseClickHandler(this._callback.formClose);
   }
 
   setFormSubmitHandler = (callback) => {
@@ -158,13 +188,58 @@ export default class EventEditView extends AbstractView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editCloseClickHandler);
   }
 
+  #setInnerHandlers = () => {
+    const eventTypeList = this.element.querySelector('.event__type-list');
+    eventTypeList.querySelectorAll('.event__type-input').forEach((item) => {
+      item.addEventListener('click', this.#eventPointTypeChangeHandler);
+    });
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+  }
+
+  #eventPointTypeChangeHandler = (evt) => {
+    const eventType = evt.target.value;
+    this.updateData({
+      type: {
+        title: eventType,
+      },
+    });
+    this.#offerChangeHandler(eventType);
+  }
+
+  #offerChangeHandler = (type) => {
+    this.updateData({
+      offers: OFFERS.find((item) => item.type === type).offers,
+    });
+  }
+
+  #destinationChangeHandler = (evt) => {
+    const destinationName = evt.target.value;
+    this.updateData({
+      destination: {
+        name: destinationName,
+        description: DESTINATIONS.find((item) => item.name === destinationName).description,
+        pictures: DESTINATIONS.find((item) => item.name === destinationName).pictures,
+      }
+    });
+  }
+
+  #priceChangeHandler= (evt) => {
+    this.updateData({
+      price: evt.target.value,
+    }, true);
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#eventPoint);
+    this._callback.formSubmit(this._data);
   }
 
   #editCloseClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.formClose();
   }
+
+  static parseEventPointToData = (eventPoint) => ({...eventPoint});
+  static parseDataToEventPoint = (data) => ({...data});
 }
