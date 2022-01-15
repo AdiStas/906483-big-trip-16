@@ -1,6 +1,9 @@
 import {TYPES, DESTINATIONS, OFFERS} from '../const.js';
 import {getDateByFormat} from '../utils';
 import SmartView from './smart-view';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
   item.checked = item.title.toLowerCase() === type.title.toLowerCase() ? 'checked' : '';
@@ -156,14 +159,32 @@ export const createEventEditTemplate = (eventPoint = {}) => {
 };
 
 export default class EventEditView extends SmartView {
+  #datepickerDateFrom = null;
+  #datepickerDateTo = null;
+
   constructor(eventPoint) {
     super();
     this._data = EventEditView.parseEventPointToData(eventPoint);
     this.#setInnerHandlers();
+    this.#setDatepicker();
   }
 
   get template() {
     return createEventEditTemplate(this._data);
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerDateFrom) {
+      this.#datepickerDateFrom.destroy();
+      this.#datepickerDateFrom = null;
+    }
+
+    if (this.#datepickerDateTo) {
+      this.#datepickerDateTo.destroy();
+      this.#datepickerDateTo = null;
+    }
   }
 
   reset = (eventPoint) => {
@@ -174,6 +195,7 @@ export default class EventEditView extends SmartView {
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditCloseClickHandler(this._callback.formClose);
   }
@@ -186,6 +208,28 @@ export default class EventEditView extends SmartView {
   setEditCloseClickHandler = (callback) => {
     this._callback.formClose = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editCloseClickHandler);
+  }
+
+  #setDatepicker = () => {
+    this.#datepickerDateFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'y/m/d H:i',
+        enableTime: true,
+        onChange: this.#dateFromChangeHandler,
+      },
+    );
+    this.#datepickerDateTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'y/m/d H:i',
+        enableTime: true,
+        'disable': [
+          (date) => date.getTime() < this._data.dateFrom.subtract(1, 'day'),
+        ],
+        onChange: this.#dateToChangeHandler,
+      },
+    );
   }
 
   #setInnerHandlers = () => {
@@ -205,6 +249,18 @@ export default class EventEditView extends SmartView {
       },
     });
     this.#offerChangeHandler(eventType);
+  }
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateFrom: userDate,
+    });
+  }
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateTo: userDate,
+    });
   }
 
   #offerChangeHandler = (type) => {
