@@ -27,13 +27,18 @@ export default class TripPresenter {
   }
 
   init = (eventPoints) => {
-    eventPoints.sort(sortEventPointDay);
-    this.#eventPoints = [...eventPoints];
-    this.#sourcedEventPoints = [...eventPoints];
+    if (eventPoints.length > 0) {
+      eventPoints.sort(sortEventPointDay);
+      this.#eventPoints = [...eventPoints];
+      this.#sourcedEventPoints = [...eventPoints];
 
-    render(this.#tripComponent, this.#eventsListComponent);
+      render(this.#tripComponent, this.#eventsListComponent);
 
-    this.#renderTrip();
+      this.#renderTrip();
+
+      return;
+    }
+    this.#renderNoEventPoints();
   }
 
   #handleModeChange = () => {
