@@ -35,9 +35,10 @@ export default class TripPresenter {
       render(this.#tripComponent, this.#eventsListComponent);
 
       this.#renderTrip();
-    } else {
-      this.#renderNoEventPoints();
+
+      return;
     }
+    this.#renderNoEventPoints();
   }
 
   #handleModeChange = () => {
