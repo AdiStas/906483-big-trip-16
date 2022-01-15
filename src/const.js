@@ -151,8 +151,20 @@ export const KEYCODE = {
   ESCAPE: 'Escape',
   ESC: 'Esc',
 };
-export const SORT_TYPE = {
+export const SortType = {
   DAY: 'day',
   TIME: 'time',
   PRICE: 'price',
+};
+
+export const UserAction = {
+  UPDATE_EVENT_POINT: 'UPDATE_EVENT_POINT',
+  ADD_EVENT_POINT: 'ADD_EVENT_POINT',
+  DELETE_EVENT_POINT: 'DELETE_EVENT_POINT',
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };

@@ -1,12 +1,12 @@
 import AbstractView from './abstract-view';
-import {SORT_TYPE} from '../const';
+import {SortType} from '../const';
 
 const sortItems = [
   {
     name: 'day',
     title: 'Day',
     status: 'checked',
-    type: SORT_TYPE.DAY,
+    type: SortType.DAY,
   },
   {
     name: 'event',
@@ -18,13 +18,13 @@ const sortItems = [
     name: 'time',
     title: 'Time',
     status: '',
-    type: SORT_TYPE.TIME,
+    type: SortType.TIME,
   },
   {
     name: 'price',
     title: 'Price',
     status: '',
-    type: SORT_TYPE.PRICE
+    type: SortType.PRICE
   },
   {
     name: 'offers',
@@ -62,6 +62,13 @@ const createSortTemplate = () => (
 );
 
 export default class SortingView extends AbstractView {
+  #currentSortType = null;
+
+  constructor(currentSortType) {
+    super();
+    this.#currentSortType = currentSortType;
+  }
+
   get template() {
     return createSortTemplate();
   }

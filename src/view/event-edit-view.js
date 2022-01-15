@@ -1,9 +1,10 @@
-import {TYPES, DESTINATIONS, OFFERS} from '../const.js';
+import {DESTINATIONS, OFFERS, TYPES} from '../const.js';
 import {getDateByFormat} from '../utils';
 import SmartView from './smart-view';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import dayjs from 'dayjs';
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
   item.checked = item.title.toLowerCase() === type.title.toLowerCase() ? 'checked' : '';
@@ -198,11 +199,17 @@ export default class EventEditView extends SmartView {
     this.#setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditCloseClickHandler(this._callback.formClose);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   }
 
   setEditCloseClickHandler = (callback) => {
@@ -225,7 +232,7 @@ export default class EventEditView extends SmartView {
         dateFormat: 'y/m/d H:i',
         enableTime: true,
         'disable': [
-          (date) => date.getTime() < this._data.dateFrom.subtract(1, 'day'),
+          (date) => date.getTime() < dayjs(this._data.dateFrom).subtract(1, 'day'),
         ],
         onChange: this.#dateToChangeHandler,
       },
@@ -282,7 +289,7 @@ export default class EventEditView extends SmartView {
 
   #priceChangeHandler= (evt) => {
     this.updateData({
-      price: evt.target.value,
+      price: Number(evt.target.value),
     }, true);
   }
 
@@ -294,6 +301,11 @@ export default class EventEditView extends SmartView {
   #editCloseClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.formClose();
+  }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEditView.parseDataToEventPoint(this._data));
   }
 
   static parseEventPointToData = (eventPoint) => ({...eventPoint});
