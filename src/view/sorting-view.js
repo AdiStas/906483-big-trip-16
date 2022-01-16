@@ -70,7 +70,8 @@ export default class SortingView extends AbstractView {
   }
 
   get template() {
-    return createSortTemplate();
+    // todo сделать по аналогии с фильтрами. сейчас не выделяется активный пункт
+    return createSortTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {

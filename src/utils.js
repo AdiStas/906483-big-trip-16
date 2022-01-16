@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {DAY, HOUR} from './const';
 
+export const getCurrentDate = (format) => dayjs().format(format);
 export const getDateByFormat = (date, format = 'DD.MM.YYYY') => dayjs(date).format(format);
 export const calculateDatesDiff = (dateFrom, dateTo) => {
   const formatTime = (time) => (String(time).length === 1) ? `0${time}` : time;

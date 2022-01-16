@@ -4,37 +4,46 @@ import NoEventView from '../view/no-event-view';
 
 import {remove, render, RenderPosition} from '../utils/render';
 import EventPointPresenter from './event-point-presenter';
-import {SortType, UpdateType, UserAction} from '../const';
+import {filter} from '../utils/filter';
+import {SortType, UpdateType, UserAction, FilterType} from '../const';
 import {sortEventPointTime, sortEventPointPrice, sortEventPointDay} from '../utils/event-point';
 
 export default class TripPresenter {
   #tripContainer = null;
   #eventPointsModel = null;
+  #filterModel = null;
 
   #tripComponent = null;
   #eventsListComponent = new EventsListView();
-  #noEventComponent = new NoEventView();
+  #noEventComponent = null;
   #sortComponent = null;
 
   #eventPresenter = new Map();
   #currentSortType = SortType.DAY;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor(tripContainer, tripComponent, eventPointsModel) {
+  constructor(tripContainer, tripComponent, eventPointsModel, filterModel) {
     this.#tripContainer = tripContainer;
     this.#tripComponent = tripComponent;
     this.#eventPointsModel = eventPointsModel;
+    this.#filterModel = filterModel;
 
     this.#eventPointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get eventPoints() {
+    this.#filterType = this.#filterModel.filter;
+    const eventPoints = this.#eventPointsModel.eventPoints;
+    const filteredEventPoints = filter[this.#filterType](eventPoints);
+
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#eventPointsModel.eventPoints].sort(sortEventPointTime);
+        return filteredEventPoints.sort(sortEventPointTime);
       case SortType.PRICE:
-        return [...this.#eventPointsModel.eventPoints].sort(sortEventPointPrice);
+        return filteredEventPoints.sort(sortEventPointPrice);
     }
-    return this.#eventPointsModel.eventPoints;
+    return filteredEventPoints;
   }
 
   init = () => {
@@ -112,6 +121,7 @@ export default class TripPresenter {
   }
 
   #renderNoEventPoints = () => {
+    this.#noEventComponent = new NoEventView(this.#filterType);
     render(this.#tripComponent, this.#noEventComponent);
   }
 
@@ -120,7 +130,10 @@ export default class TripPresenter {
     this.#eventPresenter.clear();
 
     remove(this.#sortComponent);
-    remove(this.#noEventComponent);
+
+    if (this.#noEventComponent) {
+      remove(this.#noEventComponent);
+    }
 
     if(resetSortType) {
       this.#currentSortType = SortType.DAY;

@@ -1,4 +1,4 @@
-import AbstractObservable from '../src/utils/abstract-observable';
+import AbstractObservable from '../utils/abstract-observable';
 
 export default class EventPointsModel extends AbstractObservable {
   #eventPoints = [];
