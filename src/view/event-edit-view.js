@@ -1,10 +1,23 @@
 import {DESTINATIONS, OFFERS, TYPES} from '../const.js';
-import {getDateByFormat} from '../utils';
+import {getCurrentDate, getDateByFormat} from '../utils';
 import SmartView from './smart-view';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
+
+const BLANK_EVENT_POINT = {
+  price: '',
+  dateFrom: getCurrentDate('YYYY/MM/DD HH:mm'),
+  dateTo: getCurrentDate('YYYY/MM/DD HH:mm'),
+  destination: {
+    description: '',
+    name: '',
+    pictures: [],
+  },
+  offers: [],
+  type: TYPES[0],
+};
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
   item.checked = item.title.toLowerCase() === type.title.toLowerCase() ? 'checked' : '';
@@ -23,6 +36,7 @@ const createEventTypesListTemplate = (type) => TYPES.map((item) => {
       </label>
     </div>`);
 }).join('');
+
 const createEventOffersListTemplate = (offers) => {
   const availableOffers = offers.map((item) => (
     `<div class="event__offer-selector">
@@ -163,7 +177,7 @@ export default class EventEditView extends SmartView {
   #datepickerDateFrom = null;
   #datepickerDateTo = null;
 
-  constructor(eventPoint) {
+  constructor(eventPoint = BLANK_EVENT_POINT) {
     super();
     this._data = EventEditView.parseEventPointToData(eventPoint);
     this.#setInnerHandlers();
@@ -278,6 +292,9 @@ export default class EventEditView extends SmartView {
 
   #destinationChangeHandler = (evt) => {
     const destinationName = evt.target.value;
+    if (!destinationName) {
+      return;
+    }
     this.updateData({
       destination: {
         name: destinationName,

@@ -7,6 +7,7 @@ import EventPointPresenter from './event-point-presenter';
 import {filter} from '../utils/filter';
 import {SortType, UpdateType, UserAction, FilterType} from '../const';
 import {sortEventPointTime, sortEventPointPrice, sortEventPointDay} from '../utils/event-point';
+import EventPointNewPresenter from './event-point-new-presenter';
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -19,6 +20,7 @@ export default class TripPresenter {
   #sortComponent = null;
 
   #eventPresenter = new Map();
+  #eventPointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
@@ -27,6 +29,8 @@ export default class TripPresenter {
     this.#tripComponent = tripComponent;
     this.#eventPointsModel = eventPointsModel;
     this.#filterModel = filterModel;
+
+    this.#eventPointNewPresenter = new EventPointNewPresenter(this.#eventsListComponent, this.#handleViewAction);
 
     this.#eventPointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -59,7 +63,14 @@ export default class TripPresenter {
     this.#renderNoEventPoints();
   }
 
+  createEventPoint = () => {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#eventPointNewPresenter.init();
+  }
+
   #handleModeChange = () => {
+    this.#eventPointNewPresenter.destroy();
     this.#eventPresenter.forEach((presenter) => presenter.resetView());
   }
 
@@ -126,6 +137,7 @@ export default class TripPresenter {
   }
 
   #clearTrip = (resetSortType = false) => {
+    this.#eventPointNewPresenter.destroy();
     this.#eventPresenter.forEach((presenter) => presenter.destroy());
     this.#eventPresenter.clear();
 
@@ -135,7 +147,7 @@ export default class TripPresenter {
       remove(this.#noEventComponent);
     }
 
-    if(resetSortType) {
+    if (resetSortType) {
       this.#currentSortType = SortType.DAY;
     }
   }
