@@ -7,7 +7,7 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import dayjs from 'dayjs';
 
 const BLANK_EVENT_POINT = {
-  price: '',
+  price: 0,
   dateFrom: getCurrentDate('YYYY/MM/DD HH:mm'),
   dateTo: getCurrentDate('YYYY/MM/DD HH:mm'),
   destination: {
@@ -305,8 +305,9 @@ export default class EventEditView extends SmartView {
   }
 
   #priceChangeHandler= (evt) => {
+    const value = evt.target.value.replace(/[^0-9]/g, '');
     this.updateData({
-      price: Number(evt.target.value),
+      price: Number(value),
     }, true);
   }
 
