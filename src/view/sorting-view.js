@@ -4,37 +4,33 @@ import {SortType} from '../const';
 const sortItems = [
   {
     name: 'day',
-    title: 'Day',
     status: 'checked',
     type: SortType.DAY,
   },
   {
     name: 'event',
-    title: 'Event',
     status: 'disabled',
     type: null,
   },
   {
     name: 'time',
-    title: 'Time',
     status: '',
     type: SortType.TIME,
   },
   {
     name: 'price',
-    title: 'Price',
     status: '',
     type: SortType.PRICE
   },
   {
     name: 'offers',
-    title: 'Offers',
     status: 'disabled',
     type: null,
   },
 ];
-const createSortItemsTemplate = sortItems
-  .map((item) => {
+
+const createSortTemplate = (currentSortType) => {
+  const items = sortItems.map((item) => {
     const sortAttribute = item.type ? `data-sort-type='${item.type}'` : '';
 
     return `<div
@@ -46,20 +42,19 @@ const createSortItemsTemplate = sortItems
         name="trip-sort"
         value="sort-${item.name}"
         ${sortAttribute}
-        ${item.status}>
+        ${item.status}
+        ${currentSortType === item.type ? 'checked' : ''}>
       <label
         class="trip-sort__btn"
         for="sort-${item.name}">
-        ${item.title}
+        ${item.name}
       </label>
-    </div>`;})
-  .join('');
-
-const createSortTemplate = () => (
-  `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-     ${createSortItemsTemplate}
-  </form>`
-);
+      </div>`;
+  }).join('');
+  return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+     ${items}
+  </form>`;
+};
 
 export default class SortingView extends AbstractView {
   #currentSortType = null;
@@ -70,7 +65,6 @@ export default class SortingView extends AbstractView {
   }
 
   get template() {
-    // todo сделать по аналогии с фильтрами. сейчас не выделяется активный пункт
     return createSortTemplate(this.#currentSortType);
   }
 

@@ -151,6 +151,7 @@ export const KEYCODE = {
   ESCAPE: 'Escape',
   ESC: 'Esc',
 };
+
 export const SortType = {
   DAY: 'day',
   TIME: 'time',
