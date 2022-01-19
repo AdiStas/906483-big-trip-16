@@ -95,7 +95,8 @@ export default class TripPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearTrip();
-        this.init();
+        this.#eventPointsModel.eventPoints.sort(sortEventPointDay);
+        this.#renderTrip();
         break;
       case UpdateType.MAJOR:
         this.#clearTrip(true);
