@@ -2,9 +2,9 @@ import {DESTINATIONS, OFFERS, TYPES} from '../const.js';
 import {getCurrentDate, getDateByFormat} from '../utils';
 import SmartView from './smart-view';
 import flatpickr from 'flatpickr';
+import dayjs from 'dayjs';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import dayjs from 'dayjs';
 
 const BLANK_EVENT_POINT = {
   price: 0,
@@ -237,6 +237,7 @@ export default class EventEditView extends SmartView {
       {
         dateFormat: 'y/m/d H:i',
         enableTime: true,
+        'time_24hr': true,
         onChange: this.#dateFromChangeHandler,
       },
     );
@@ -245,6 +246,7 @@ export default class EventEditView extends SmartView {
       {
         dateFormat: 'y/m/d H:i',
         enableTime: true,
+        'time_24hr': true,
         'disable': [
           (date) => date.getTime() < dayjs(this._data.dateFrom).subtract(1, 'day'),
         ],
@@ -313,7 +315,7 @@ export default class EventEditView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this._data);
+    this._callback.formSubmit(EventEditView.parseDataToEventPoint(this._data));
   }
 
   #editCloseClickHandler = (evt) => {
@@ -327,5 +329,10 @@ export default class EventEditView extends SmartView {
   }
 
   static parseEventPointToData = (eventPoint) => ({...eventPoint});
-  static parseDataToEventPoint = (data) => ({...data});
+  static parseDataToEventPoint = (data) => {
+    const eventPoint = {...data};
+    eventPoint.dateFrom = dayjs(eventPoint.dateFrom);
+    eventPoint.dateTo = dayjs(eventPoint.dateTo);
+    return eventPoint;
+  };
 }
