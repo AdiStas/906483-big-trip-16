@@ -95,7 +95,7 @@ export default class TripPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearTrip();
-        this.#renderTrip();
+        this.init();
         break;
       case UpdateType.MAJOR:
         this.#clearTrip(true);
