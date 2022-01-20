@@ -1,9 +1,23 @@
-import {TYPES, DESTINATIONS, OFFERS} from '../const.js';
-import {getDateByFormat} from '../utils';
+import {DESTINATIONS, OFFERS, TYPES} from '../const.js';
+import {getCurrentDate, getDateByFormat} from '../utils';
 import SmartView from './smart-view';
 import flatpickr from 'flatpickr';
+import dayjs from 'dayjs';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+
+const BLANK_EVENT_POINT = {
+  price: 0,
+  dateFrom: getCurrentDate('YYYY/MM/DD HH:mm'),
+  dateTo: getCurrentDate('YYYY/MM/DD HH:mm'),
+  destination: {
+    description: '',
+    name: '',
+    pictures: [],
+  },
+  offers: [],
+  type: TYPES[0],
+};
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
   item.checked = item.title.toLowerCase() === type.title.toLowerCase() ? 'checked' : '';
@@ -22,6 +36,7 @@ const createEventTypesListTemplate = (type) => TYPES.map((item) => {
       </label>
     </div>`);
 }).join('');
+
 const createEventOffersListTemplate = (offers) => {
   const availableOffers = offers.map((item) => (
     `<div class="event__offer-selector">
@@ -162,7 +177,7 @@ export default class EventEditView extends SmartView {
   #datepickerDateFrom = null;
   #datepickerDateTo = null;
 
-  constructor(eventPoint) {
+  constructor(eventPoint = BLANK_EVENT_POINT) {
     super();
     this._data = EventEditView.parseEventPointToData(eventPoint);
     this.#setInnerHandlers();
@@ -198,11 +213,17 @@ export default class EventEditView extends SmartView {
     this.#setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditCloseClickHandler(this._callback.formClose);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   }
 
   setEditCloseClickHandler = (callback) => {
@@ -216,6 +237,7 @@ export default class EventEditView extends SmartView {
       {
         dateFormat: 'y/m/d H:i',
         enableTime: true,
+        'time_24hr': true,
         onChange: this.#dateFromChangeHandler,
       },
     );
@@ -224,8 +246,9 @@ export default class EventEditView extends SmartView {
       {
         dateFormat: 'y/m/d H:i',
         enableTime: true,
+        'time_24hr': true,
         'disable': [
-          (date) => date.getTime() < this._data.dateFrom.subtract(1, 'day'),
+          (date) => date.getTime() < dayjs(this._data.dateFrom).subtract(1, 'day'),
         ],
         onChange: this.#dateToChangeHandler,
       },
@@ -271,6 +294,9 @@ export default class EventEditView extends SmartView {
 
   #destinationChangeHandler = (evt) => {
     const destinationName = evt.target.value;
+    if (!destinationName) {
+      return;
+    }
     this.updateData({
       destination: {
         name: destinationName,
@@ -281,14 +307,15 @@ export default class EventEditView extends SmartView {
   }
 
   #priceChangeHandler= (evt) => {
+    const value = evt.target.value.replace(/[^0-9]/g, '');
     this.updateData({
-      price: evt.target.value,
+      price: Number(value),
     }, true);
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this._data);
+    this._callback.formSubmit(EventEditView.parseDataToEventPoint(this._data));
   }
 
   #editCloseClickHandler = (evt) => {
@@ -296,6 +323,16 @@ export default class EventEditView extends SmartView {
     this._callback.formClose();
   }
 
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEditView.parseDataToEventPoint(this._data));
+  }
+
   static parseEventPointToData = (eventPoint) => ({...eventPoint});
-  static parseDataToEventPoint = (data) => ({...data});
+  static parseDataToEventPoint = (data) => {
+    const eventPoint = {...data};
+    eventPoint.dateFrom = dayjs(eventPoint.dateFrom);
+    eventPoint.dateTo = dayjs(eventPoint.dateTo);
+    return eventPoint;
+  };
 }

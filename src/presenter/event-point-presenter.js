@@ -2,6 +2,8 @@ import {remove, render, replace} from '../utils/render';
 import {KEYCODE} from '../const';
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
+import {UserAction, UpdateType} from '../const';
+import {isDateEqual, isPriceEqual} from '../utils/event-point';
 
 const Mode = {
   DEFAULT: 'default',
@@ -38,6 +40,7 @@ export default class EventPointPresenter {
     this.#eventPointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#eventPointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventPointEditComponent.setEditCloseClickHandler(this.#handleEditCloseClick);
+    this.#eventPointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevEventPointComponent === null || prevEventPointEditComponent === null) {
       render(this.#eventPointListContainer, this.#eventPointComponent);
@@ -94,7 +97,11 @@ export default class EventPointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#eventPoint, isFavorite: !this.#eventPoint.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_EVENT_POINT,
+      UpdateType.MINOR,
+      {...this.#eventPoint, isFavorite: !this.#eventPoint.isFavorite}
+    );
   }
 
   #handleEditCloseClick = () => {
@@ -102,8 +109,27 @@ export default class EventPointPresenter {
     this.#replaceFormToEventPoint();
   }
 
-  #handleFormSubmit = (eventPoint) => {
-    this.#changeData(eventPoint);
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      !isPriceEqual(update.price, this.#eventPoint.price) ||
+      !isDateEqual(
+        [update.dateFrom, update.dateTo],
+        [this.#eventPoint.dateFrom, this.#eventPoint.dateTo]
+      );
+
+    this.#changeData(
+      UserAction.UPDATE_EVENT_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToEventPoint();
+  }
+
+  #handleDeleteClick = (eventPoint) => {
+    this.#changeData(
+      UserAction.DELETE_EVENT_POINT,
+      UpdateType.MINOR,
+      eventPoint,
+    );
   }
 }
