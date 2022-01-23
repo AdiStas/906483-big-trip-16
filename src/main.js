@@ -2,6 +2,7 @@ import {EVENT_COUNT} from './const';
 import {render} from './utils/render';
 import {generateEventPoint} from './mock/event-point';
 import SiteMenuView from './view/site-menu-view';
+import StatisticsView from './view/statistics-view';
 import TripPresenter from './presenter/trip-presenter';
 import FilterPresenter from './presenter/filter-presenter.js';
 import EventPointsModel from './model/points-model';
@@ -48,10 +49,12 @@ const handleSiteMenuClick = (menuItem) => {
 
 siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
-filterPresenter.init();
-tripPresenter.init();
+// filterPresenter.init();
+// tripPresenter.init();
 
 document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
   evt.preventDefault();
   tripPresenter.createEventPoint();
 });
+
+render(siteMainElement, new StatisticsView(eventPointsModel.eventPoints));

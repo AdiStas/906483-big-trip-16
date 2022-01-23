@@ -10,7 +10,6 @@ const createSiteMenuTemplate = (currentMenuItem) => (
 
 export default class SiteMenuView extends AbstractView {
   #currentMenuItem = null;
-
   constructor(currentMenuItem) {
     super();
     this.#currentMenuItem = currentMenuItem;
