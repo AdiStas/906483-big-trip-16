@@ -57,4 +57,4 @@ document.querySelector('.trip-main__event-add-btn').addEventListener('click', (e
   tripPresenter.createEventPoint();
 });
 
-render(siteMainElement, new StatisticsView(eventPointsModel.eventPoints));
+render(siteMainElementContainer, new StatisticsView(eventPointsModel.eventPoints));

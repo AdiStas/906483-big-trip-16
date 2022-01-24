@@ -1,5 +1,5 @@
 import {DESTINATIONS, OFFERS, TYPES} from '../const.js';
-import {getCurrentDate, getDateByFormat} from '../utils';
+import {getCurrentDate, getDateByFormat} from '../utils/common';
 import SmartView from './smart-view';
 import flatpickr from 'flatpickr';
 import dayjs from 'dayjs';
