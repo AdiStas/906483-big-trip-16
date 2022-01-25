@@ -308,21 +308,25 @@ const renderTimeCharts = (timeCtx, eventPoints) => {
   });
 };
 
-const createStatisticsTemplate = () => `<section class="statistics">
+const canvasIdList = [
+  'money',
+  'type',
+  'time',
+];
+const createStatisticsItemTemplate = (id) => (
+  `<div class="statistics__item">
+      <canvas class="statistics__chart" id="${id}" width="900"></canvas>
+    </div>`
+);
+const createStatisticsTemplate = () => {
+  const statisticsItemTemplate = canvasIdList
+    .map((item) => createStatisticsItemTemplate(item))
+    .join('');
+  return `<section class="statistics">
     <h2 class="visually-hidden">Trip statistics</h2>
-
-    <div class="statistics__item">
-      <canvas class="statistics__chart" id="money" width="900"></canvas>
-    </div>
-
-    <div class="statistics__item">
-      <canvas class="statistics__chart" id="type" width="900"></canvas>
-    </div>
-
-    <div class="statistics__item">
-      <canvas class="statistics__chart" id="time" width="900"></canvas>
-    </div>
+    ${statisticsItemTemplate}
   </section>`;
+};
 
 export default class StatisticsView extends SmartView {
   #moneyCharts = null;
