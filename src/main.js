@@ -1,5 +1,5 @@
 import {EVENT_COUNT} from './const';
-import {render} from './utils/render';
+import {remove, render} from './utils/render';
 import {generateEventPoint} from './mock/event-point';
 import SiteMenuView from './view/site-menu-view';
 import StatisticsView from './view/statistics-view';
@@ -32,29 +32,30 @@ const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, even
 
 render(siteNavElement, siteMenuComponent);
 
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  tripPresenter.createEventPoint();
+});
+
+let statisticsComponent = null;
+
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
-      // Скрыть статистику
       filterPresenter.init();
       tripPresenter.init();
+      remove(statisticsComponent);
       break;
     case MenuItem.STATS:
       filterPresenter.destroy();
       tripPresenter.destroy();
-      // Показать статистику
+      statisticsComponent = new StatisticsView(eventPointsModel.eventPoints);
+      render(siteMainElementContainer, statisticsComponent);
       break;
   }
 };
 
 siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
-// filterPresenter.init();
-// tripPresenter.init();
-
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
-  evt.preventDefault();
-  tripPresenter.createEventPoint();
-});
-
-render(siteMainElementContainer, new StatisticsView(eventPointsModel.eventPoints));
+filterPresenter.init();
+tripPresenter.init();

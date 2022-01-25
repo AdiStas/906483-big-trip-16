@@ -1,7 +1,7 @@
 import {nanoid} from 'nanoid';
 import {generatePicture} from './mock/event-point';
 
-export const EVENT_COUNT = 2;
+export const EVENT_COUNT = 15;
 export const HOUR = 60;
 export const DAY = 24;
 export const TYPES = [
