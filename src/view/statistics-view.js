@@ -1,7 +1,11 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart-view';
-import {calculateDatesDiff} from '../utils/common';
+
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(duration);
 
 const renderMoneyCharts = (ctx, eventPoints) => {
   let titles = new Set;
@@ -207,7 +211,7 @@ const renderTimeCharts = (timeCtx, eventPoints) => {
   });
 
   const sortItemByDateFrom = (a, b) => a.dateFrom.valueOf() - b.dateFrom.valueOf();
-  const sortItemByDateTo = (a, b) => b.dateFrom.valueOf() - a.dateFrom.valueOf();
+  const sortItemByDateTo = (a, b) => b.dateTo.valueOf() - a.dateTo.valueOf();
 
   const minDates = arraysFilteredByType.map((item) => {
     item.sort(sortItemByDateFrom);
@@ -215,11 +219,12 @@ const renderTimeCharts = (timeCtx, eventPoints) => {
   });
   const maxDates = arraysFilteredByType.map((item) => {
     item.sort(sortItemByDateTo);
-    return item[0].dateFrom.valueOf();
+    return item[0].dateTo.valueOf();
   });
+
   const data = [];
   minDates.forEach((item, index) => {
-    data.push(minDates - maxDates[index]);
+    data.push(maxDates[index] - item);
   });
 
   const arrayOfObj = labels.map((item, index) => ({
@@ -233,7 +238,6 @@ const renderTimeCharts = (timeCtx, eventPoints) => {
     newArrayLabel.push(item.label);
     newArrayData.push(item.data);
   });
-  console.log(newArrayData);
   return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
@@ -258,7 +262,10 @@ const renderTimeCharts = (timeCtx, eventPoints) => {
           color: '#000000',
           anchor: 'end',
           align: 'start',
-          formatter: (val) => `${val}`,
+          formatter: (val) => {
+            const value = dayjs.duration(val).format('DD[D] HH[H] mm[M]');
+            return `${value}`;
+          },
         },
       },
       title: {
