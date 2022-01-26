@@ -2,7 +2,6 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import {sortItemByDateFrom, sortItemByDateTo} from './common';
 import {ChartType} from '../const';
 
 dayjs.extend(duration);
@@ -77,17 +76,12 @@ export const renderChart = (ctx, eventPoints, type) => {
   }
 
   if (type === ChartType.TIME) {
-    // todo доработать сортировку
-    const minDates = arraysFilteredByType.map((item) => {
-      item.sort(sortItemByDateFrom);
-      return item[0].dateFrom.valueOf();
-    });
-    const maxDates = arraysFilteredByType.map((item) => {
-      item.sort(sortItemByDateTo);
-      return item[0].dateTo.valueOf();
-    });
-    minDates.forEach((item, index) => {
-      values.push(maxDates[index] - item);
+    const durations = arraysFilteredByType.map((item) => item.map((i) => ({
+      type: i.type.title,
+      duration: i.dateTo.valueOf() - i.dateFrom.valueOf(),
+    })));
+    durations.forEach((item) => {
+      values.push(item.reduce((accumulator, currentValue) => accumulator + currentValue.duration, 0));
     });
   }
 

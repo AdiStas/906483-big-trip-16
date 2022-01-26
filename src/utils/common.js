@@ -22,6 +22,4 @@ export const calculateDatesDiff = (dateFrom, dateTo) => {
   }
   return `${formatTime(daysDiff)}D ${formatTime(hoursDiff)}H ${formatTime(minutesDiff)}M`;
 };
-export const sortItemByDateFrom = (a, b) => a.dateFrom.valueOf() - b.dateFrom.valueOf();
-export const sortItemByDateTo = (a, b) => b.dateTo.valueOf() - a.dateTo.valueOf();
 
