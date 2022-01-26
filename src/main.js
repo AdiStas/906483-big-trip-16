@@ -42,11 +42,17 @@ let statisticsComponent = null;
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
+      remove(siteMenuComponent);
+      render(siteNavElement, siteMenuComponent);
+      siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
       filterPresenter.init();
       tripPresenter.init();
       remove(statisticsComponent);
       break;
     case MenuItem.STATS:
+      remove(siteMenuComponent);
+      render(siteNavElement, siteMenuComponent);
+      siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
       filterPresenter.destroy();
       tripPresenter.destroy();
       statisticsComponent = new StatisticsView(eventPointsModel.eventPoints);

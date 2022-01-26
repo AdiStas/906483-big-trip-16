@@ -62,11 +62,6 @@ export default class StatisticsView extends SmartView {
     const typeCtx = this.element.querySelector('#type');
     const timeCtx = this.element.querySelector('#time');
 
-    // const BAR_HEIGHT = 55;
-    // moneyCtx.height = BAR_HEIGHT * 5;
-    // typeCtx.height = BAR_HEIGHT * 5;
-    // timeCtx.height = BAR_HEIGHT * 5;
-
     this.#moneyCharts = renderChart(moneyCtx, this._data, ChartType.MONEY);
     this.#typeCharts = renderChart(typeCtx, this._data, ChartType.TYPE);
     this.#timeCharts = renderChart(timeCtx, this._data, ChartType.TIME);

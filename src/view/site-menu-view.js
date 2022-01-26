@@ -10,6 +10,7 @@ const createSiteMenuTemplate = (currentMenuItem) => (
 
 export default class SiteMenuView extends AbstractView {
   #currentMenuItem = null;
+
   constructor(currentMenuItem) {
     super();
     this.#currentMenuItem = currentMenuItem;
@@ -30,7 +31,10 @@ export default class SiteMenuView extends AbstractView {
     }
 
     evt.preventDefault();
-    this.#currentMenuItem = evt.target.dataset.menuItem;
-    this._callback.menuClick(evt.target.dataset.menuItem);
+
+    if (this.#currentMenuItem !== evt.target.dataset.menuItem) {
+      this.#currentMenuItem = evt.target.dataset.menuItem;
+      this._callback.menuClick(evt.target.dataset.menuItem);
+    }
   }
 }
