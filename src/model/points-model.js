@@ -1,14 +1,28 @@
 import AbstractObservable from '../utils/abstract-observable';
+import {UpdateType} from '../const.js';
 
 export default class EventPointsModel extends AbstractObservable {
+  #apiService = null;
   #eventPoints = [];
 
-  set eventPoints(eventPoints) {
-    this.#eventPoints = [...eventPoints];
+  constructor(apiService) {
+    super();
+    this.#apiService = apiService;
   }
 
   get eventPoints() {
     return this.#eventPoints;
+  }
+
+  init = async () => {
+    try {
+      const eventPoints = await this.#apiService.eventPoints;
+      this.#eventPoints = eventPoints.map(this.#adaptToClient);
+    } catch (e) {
+      this.#eventPoints = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   updateEventPoint = (updateType, update) => {
@@ -49,5 +63,21 @@ export default class EventPointsModel extends AbstractObservable {
     ];
 
     this._notify(updateType);
+  }
+
+  #adaptToClient = (eventPoint) => {
+    const adaptedEventPoint = {...eventPoint,
+      dateFrom: new Date(eventPoint['date_from']),
+      dateTo: new Date(eventPoint['date_to']),
+      price: eventPoint['base_price'],
+      isFavorite: eventPoint['is_favorite'],
+    };
+
+    delete adaptedEventPoint['date_from'];
+    delete adaptedEventPoint['date_to'];
+    delete adaptedEventPoint['base_price'];
+    delete adaptedEventPoint['is_favorite'];
+
+    return adaptedEventPoint;
   }
 }

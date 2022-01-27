@@ -1,23 +1,19 @@
-import {EVENT_COUNT} from './const';
+import {AUTHORIZATION, END_POINT, MenuItem} from './const';
 import {remove, render} from './utils/render';
-import {generateEventPoint} from './mock/event-point';
 import SiteMenuView from './view/site-menu-view';
 import StatisticsView from './view/statistics-view';
 import TripPresenter from './presenter/trip-presenter';
 import FilterPresenter from './presenter/filter-presenter.js';
 import EventPointsModel from './model/points-model';
 import FilterModel from './model/filter-model';
-import {MenuItem} from './const';
-
-const eventPoints = Array.from({length: EVENT_COUNT}, generateEventPoint);
-
-const eventPointsModel = new EventPointsModel();
-eventPointsModel.eventPoints = eventPoints;
-
-const filterModel = new FilterModel();
+import ApiService from './api-service';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');
+
+const eventPointsModel = new EventPointsModel(new ApiService(END_POINT, AUTHORIZATION));
+
+const filterModel = new FilterModel();
 
 const currentMenuItem = MenuItem.TABLE;
 const siteMenuComponent = new SiteMenuView(currentMenuItem);
@@ -30,14 +26,18 @@ const siteMainElementContainer = siteMainElement.querySelector('.page-body__cont
 const tripPresenter = new TripPresenter(siteMainElementContainer, eventPointsModel, filterModel);
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, eventPointsModel);
 
-render(siteNavElement, siteMenuComponent);
-
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
-  evt.preventDefault();
-  tripPresenter.createEventPoint();
-});
+const addBtn = document.querySelector('.trip-main__event-add-btn');
+addBtn.setAttribute('disabled', '');
 
 let statisticsComponent = null;
+
+const setAddBtnActiveState = () => {
+  addBtn.removeAttribute('disabled');
+  addBtn.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    tripPresenter.createEventPoint();
+  });
+};
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -61,7 +61,12 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+render(siteNavElement, siteMenuComponent);
 
 filterPresenter.init();
 tripPresenter.init();
+
+eventPointsModel.init().finally(() => {
+  setAddBtnActiveState();
+  siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+});
