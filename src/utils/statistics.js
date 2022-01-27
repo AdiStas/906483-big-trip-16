@@ -9,7 +9,7 @@ dayjs.extend(duration);
 const getUniqTitles = (eventPoints) => {
   let titles = new Set;
   eventPoints.forEach((item) => {
-    titles.add(item.type.title);
+    titles.add(item.type);
   });
   titles = [...titles];
   return titles;
@@ -18,7 +18,7 @@ const getUniqTitles = (eventPoints) => {
 const getArraysFilteredByType = (titles, eventPoints) => {
   const arraysFilteredByType = [];
   titles.forEach((item) => {
-    arraysFilteredByType.push(eventPoints.filter((i) => i.type.title === item));
+    arraysFilteredByType.push(eventPoints.filter((i) => i.type === item));
   });
   return arraysFilteredByType;
 };
@@ -62,7 +62,6 @@ export const renderChart = (ctx, eventPoints, type) => {
   const titles = getUniqTitles(eventPoints);
   const titlesToUpperCase = titles.map((item) => item.toUpperCase());
   const arraysFilteredByType = getArraysFilteredByType(titles, eventPoints);
-
   let values = [];
 
   if (type === ChartType.MONEY) {

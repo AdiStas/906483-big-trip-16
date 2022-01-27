@@ -1,5 +1,7 @@
+import dayjs from 'dayjs';
+
 export const sortEventPointDay = (a, b) => a.dateFrom.valueOf() - b.dateFrom.valueOf();
-export const sortEventPointTime = (a, b) => b.dateTo.diff(b.dateFrom) - a.dateTo.diff(a.dateFrom);
+export const sortEventPointTime = (a, b) => dayjs(b.dateTo).diff(dayjs(b.dateFrom)) - dayjs(a.dateTo).diff(dayjs(a.dateFrom));
 export const sortEventPointPrice = (a, b) => b.price - a.price;
 
 export const isPriceEqual = (priceA, priceB) => priceA === priceB;
