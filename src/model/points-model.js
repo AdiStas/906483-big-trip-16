@@ -25,20 +25,25 @@ export default class EventPointsModel extends AbstractObservable {
     this._notify(UpdateType.INIT);
   }
 
-  updateEventPoint = (updateType, update) => {
+  updateEventPoint = async (updateType, update) => {
     const index = this.#eventPoints.findIndex((eventPoint) => eventPoint.id === eventPoint.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting eventPoint');
     }
 
-    this.#eventPoints = [
-      ...this.#eventPoints.slice(0, index),
-      update,
-      ...this.#eventPoints.slice(index + 1),
-    ];
-
-    this._notify(updateType, update);
+    try {
+      const response = await this.#apiService.updateEventPoint(update);
+      const updatedEventPoint = this.#adaptToClient(response);
+      this.#eventPoints = [
+        ...this.#eventPoints.slice(0, index),
+        updatedEventPoint,
+        ...this.#eventPoints.slice(index + 1),
+      ];
+      this._notify(updateType, update);
+    } catch (e) {
+      throw new Error('Can\'t update event point');
+    }
   }
 
   addEventPoint = (updateType, update) => {
