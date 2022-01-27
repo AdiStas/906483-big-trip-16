@@ -1,5 +1,5 @@
 import {FilterType} from '../const';
-import {getCurrentDate, getDateByFormat} from '../utils';
+import {getCurrentDate, getDateByFormat} from './common';
 
 export const filter = {
   [FilterType.EVERYTHING]: (eventPoints) => eventPoints.filter((eventPoint) => eventPoint),

@@ -8,13 +8,14 @@ import {filter} from '../utils/filter';
 import {SortType, UpdateType, UserAction, FilterType} from '../const';
 import {sortEventPointTime, sortEventPointPrice, sortEventPointDay} from '../utils/event-point';
 import EventPointNewPresenter from './event-point-new-presenter';
+import TripEventsView from '../view/trip-events-view';
 
 export default class TripPresenter {
   #tripContainer = null;
   #eventPointsModel = null;
   #filterModel = null;
 
-  #tripComponent = null;
+  #tripComponent = new TripEventsView();
   #eventsListComponent = new EventsListView();
   #noEventComponent = null;
   #sortComponent = null;
@@ -24,16 +25,12 @@ export default class TripPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
-  constructor(tripContainer, tripComponent, eventPointsModel, filterModel) {
+  constructor(tripContainer, eventPointsModel, filterModel) {
     this.#tripContainer = tripContainer;
-    this.#tripComponent = tripComponent;
     this.#eventPointsModel = eventPointsModel;
     this.#filterModel = filterModel;
 
     this.#eventPointNewPresenter = new EventPointNewPresenter(this.#eventsListComponent, this.#handleViewAction);
-
-    this.#eventPointsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get eventPoints() {
@@ -51,9 +48,15 @@ export default class TripPresenter {
   }
 
   init = () => {
+    this.#eventPointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
+    render(this.#tripContainer, this.#tripComponent);
+
     if (this.#eventPointsModel.eventPoints.length > 0) {
       this.#eventPointsModel.eventPoints.sort(sortEventPointDay);
 
+      render(this.#tripContainer, this.#tripComponent);
       render(this.#tripComponent, this.#eventsListComponent);
       this.#renderTrip();
 
@@ -63,9 +66,18 @@ export default class TripPresenter {
     this.#renderNoEventPoints();
   }
 
+  destroy = () => {
+    this.#clearTrip(true);
+
+    remove(this.#eventsListComponent);
+    remove(this.#tripComponent);
+
+    this.#eventPointsModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
+  }
+
   createEventPoint = () => {
     this.#currentSortType = SortType.DAY;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#eventPointNewPresenter.init();
   }
 

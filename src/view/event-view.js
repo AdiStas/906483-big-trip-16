@@ -1,4 +1,4 @@
-import {getDateByFormat, calculateDatesDiff} from '../utils';
+import {getDateByFormat, calculateDatesDiff} from '../utils/common';
 import AbstractView from './abstract-view';
 
 const createEventOffersTemplate = (offers) => offers.map((item) => (

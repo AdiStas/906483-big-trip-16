@@ -175,3 +175,14 @@ export const FilterType = {
   FUTURE: 'future',
   PAST: 'past',
 };
+
+export const MenuItem = {
+  TABLE: 'table',
+  STATS: 'stats',
+};
+
+export const ChartType = {
+  MONEY: 'money',
+  TYPE: 'type',
+  TIME: 'time',
+};
