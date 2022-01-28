@@ -26,8 +26,7 @@ export default class EventPointsModel extends AbstractObservable {
   }
 
   updateEventPoint = async (updateType, update) => {
-    const index = this.#eventPoints.findIndex((eventPoint) => eventPoint.id === eventPoint.id);
-
+    const index = this.#eventPoints.findIndex((eventPoint) => eventPoint.id === update.id);
     if (index === -1) {
       throw new Error('Can\'t update unexisting eventPoint');
     }

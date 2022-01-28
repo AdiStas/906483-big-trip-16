@@ -1,4 +1,4 @@
-import {DESTINATIONS, OFFERS, TYPES} from '../const.js';
+import {TYPES} from '../const.js';
 import {getCurrentDate, getDateByFormat} from '../utils/common';
 import SmartView from './smart-view';
 import flatpickr from 'flatpickr';
@@ -17,22 +17,23 @@ const BLANK_EVENT_POINT = {
   },
   offers: [],
   type: TYPES[0],
+  isFavorite: false,
 };
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
-  item.checked = item.title.toLowerCase() === type.title.toLowerCase() ? 'checked' : '';
+  const checked = item.toLowerCase() === type.toLowerCase() ? 'checked' : '';
   return (`<div class="event__type-item">
       <input
-        id="event-type-${item.title.toLowerCase()}-1"
+        id="event-type-${item.toLowerCase()}-1"
         class="event__type-input  visually-hidden"
         type="radio"
         name="event-type"
-        value="${item.title.toLowerCase()}"
-        ${item.checked}>
+        value="${item.toLowerCase()}"
+        ${checked}>
       <label
-        class="event__type-label  event__type-label--${item.title.toLowerCase()}"
-        for="event-type-${item.title.toLowerCase()}-1">
-        ${item.title}
+        class="event__type-label  event__type-label--${item.toLowerCase()}"
+        for="event-type-${item.toLowerCase()}-1">
+        ${item}
       </label>
     </div>`);
 }).join('');
@@ -72,7 +73,8 @@ const createEventOffersListTemplate = (offers) => {
     return '';
   }
 };
-const createEventDestinationOptionsTemplate = () => DESTINATIONS.map((item) => `<option value="${item.name}"></option>`).join('');
+const createEventDestinationOptionsTemplate = () => '';
+// const createEventDestinationOptionsTemplate = () => DESTINATIONS.map((item) => `<option value="${item.name}"></option>`).join('');
 const createEventPicturesTemplate = (destination) => {
   if (destination.pictures.length > 0) {
     const pictures = destination.pictures.map((item) => `<img class="event__photo" src="${item.src}" alt="Event photo">`).join('');
@@ -98,16 +100,12 @@ const createEventDestinationTemplate = (destination) => {
 };
 export const createEventEditTemplate = (eventPoint = {}) => {
   const {
-    price = '',
-    dateFrom = '',
-    dateTo = '',
-    destination = {
-      description: '',
-      name: '',
-      pictures: [],
-    },
-    offers = [],
-    type = {},
+    price,
+    dateFrom,
+    dateTo,
+    destination,
+    offers,
+    type,
   } = eventPoint;
 
   const eventTypeTemplate = createEventTypesListTemplate(type);
@@ -121,7 +119,7 @@ export const createEventEditTemplate = (eventPoint = {}) => {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/${type.title.toLowerCase()}.png" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -135,7 +133,7 @@ export const createEventEditTemplate = (eventPoint = {}) => {
 
                   <div class="event__field-group  event__field-group--destination">
                     <label class="event__label  event__type-output" for="event-destination-1">
-                      ${type.title.toLowerCase()}
+                      ${type.toLowerCase()}
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
                     <datalist id="destination-list-1">
@@ -267,9 +265,7 @@ export default class EventEditView extends SmartView {
   #eventPointTypeChangeHandler = (evt) => {
     const eventType = evt.target.value;
     this.updateData({
-      type: {
-        title: eventType,
-      },
+      type: eventType,
     });
     this.#offerChangeHandler(eventType);
   }
@@ -277,18 +273,19 @@ export default class EventEditView extends SmartView {
   #dateFromChangeHandler = ([userDate]) => {
     this.updateData({
       dateFrom: userDate,
-    });
+    },true);
   }
 
   #dateToChangeHandler = ([userDate]) => {
     this.updateData({
       dateTo: userDate,
-    });
+    },true);
   }
 
   #offerChangeHandler = (type) => {
     this.updateData({
-      offers: OFFERS.find((item) => item.type === type).offers,
+      // offers: OFFERS.find((item) => item.type === type).offers,
+      offers: [],
     });
   }
 
@@ -300,8 +297,10 @@ export default class EventEditView extends SmartView {
     this.updateData({
       destination: {
         name: destinationName,
-        description: DESTINATIONS.find((item) => item.name === destinationName).description,
-        pictures: DESTINATIONS.find((item) => item.name === destinationName).pictures,
+        // description: DESTINATIONS.find((item) => item.name === destinationName).description,
+        description: [],
+        // pictures: DESTINATIONS.find((item) => item.name === destinationName).pictures,
+        pictures: [],
       }
     });
   }
@@ -329,10 +328,5 @@ export default class EventEditView extends SmartView {
   }
 
   static parseEventPointToData = (eventPoint) => ({...eventPoint});
-  static parseDataToEventPoint = (data) => {
-    const eventPoint = {...data};
-    eventPoint.dateFrom = dayjs(eventPoint.dateFrom);
-    eventPoint.dateTo = dayjs(eventPoint.dateTo);
-    return eventPoint;
-  };
+  static parseDataToEventPoint = (data) => ({...data});
 }

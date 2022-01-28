@@ -28,9 +28,9 @@ const createEventTemplate = (eventPoint) => {
       <div class="event">
         <time class="event__date" datetime="${getDateByFormat(dateFrom,'YYYY-MM-DD')}">${getDateByFormat(dateFrom,'MMM DD')}</time>
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.title.toLowerCase()}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type.title} ${destination.name}</h3>
+        <h3 class="event__title">${type} ${destination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${getDateByFormat(dateFrom,'YYYY-MM-DDTHH:mm')}">${getDateByFormat(dateFrom,'HH:mm')}</time>

@@ -3,42 +3,15 @@ export const DAY = 24;
 export const HOUR = 60;
 
 export const TYPES = [
-  {
-    title: 'Taxi',
-    checked: '',
-  },
-  {
-    title: 'Bus',
-    checked: '',
-  },
-  {
-    title: 'Train',
-    checked: '',
-  },
-  {
-    title: 'Ship',
-    checked: '',
-  },
-  {
-    title: 'Drive',
-    checked: '',
-  },
-  {
-    title: 'Flight',
-    checked: '',
-  },
-  {
-    title: 'Check-in',
-    checked: '',
-  },
-  {
-    title: 'Sightseeing',
-    checked: '',
-  },
-  {
-    title: 'Restaurant',
-    checked: '',
-  },
+  'Taxi',
+  'Bus',
+  'Train',
+  'Ship',
+  'Drive',
+  'Flight',
+  'Check-in',
+  'Sightseeing',
+  'Restaurant',
 ];
 
 export const KEYCODE = {
