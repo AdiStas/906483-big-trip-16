@@ -1,7 +1,22 @@
 import EventEditView from '../view/event-edit-view';
 import {nanoid} from 'nanoid';
-import {remove, render, RenderPosition} from '../utils/render.js';
-import {UserAction, UpdateType, KeyCode} from '../const.js';
+import {remove, render, RenderPosition, replace} from '../utils/render.js';
+import {UserAction, UpdateType, KeyCode, TYPES} from '../const.js';
+import {getCurrentDate} from '../utils/common';
+
+const BLANK_EVENT_POINT = {
+  price: 0,
+  dateFrom: getCurrentDate('YYYY/MM/DD HH:mm'),
+  dateTo: getCurrentDate('YYYY/MM/DD HH:mm'),
+  destination: {
+    description: '',
+    name: '',
+    pictures: [],
+  },
+  offers: [],
+  type: TYPES[0],
+  isFavorite: false,
+};
 
 export default class EventPointNewPresenter {
   #eventPointListContainer = null;
@@ -18,8 +33,9 @@ export default class EventPointNewPresenter {
       return;
     }
 
-    this.#eventPointEditComponent = new EventEditView(destinations, offers);
+    this.#eventPointEditComponent = new EventEditView(BLANK_EVENT_POINT, destinations, offers);
     this.#eventPointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#eventPointEditComponent.setEditCloseClickHandler(this.#handleEditCloseClick);
     this.#eventPointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     render(this.#eventPointListContainer, this.#eventPointEditComponent, RenderPosition.AFTERBEGIN);
@@ -36,6 +52,10 @@ export default class EventPointNewPresenter {
     this.#eventPointEditComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  #handleEditCloseClick = () => {
+    this.destroy();
   }
 
   #handleFormSubmit = (eventPoint) => {

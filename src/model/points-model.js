@@ -32,7 +32,8 @@ export default class EventPointsModel extends AbstractObservable {
       this.#offers = await this.#apiService.offers;
     } catch (e) {
       this.#eventPoints = [];
-      // todo добавить обработку ошибок offers и destinations
+      this.#destinations = [];
+      this.#offers = [];
     }
     this._notify(UpdateType.INIT);
   }
