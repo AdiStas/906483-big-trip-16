@@ -1,6 +1,6 @@
 import EventEditView from '../view/event-edit-view';
 import {nanoid} from 'nanoid';
-import {remove, render, RenderPosition, replace} from '../utils/render.js';
+import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType, KeyCode, TYPES} from '../const.js';
 import {getCurrentDate} from '../utils/common';
 
