@@ -49,6 +49,14 @@ export default class TripPresenter {
     return filteredEventPoints;
   }
 
+  get destinations() {
+    return this.#eventPointsModel.destinations;
+  }
+
+  get offers() {
+    return this.#eventPointsModel.offers;
+  }
+
   init = () => {
     this.#eventPointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -74,7 +82,7 @@ export default class TripPresenter {
 
   createEventPoint = () => {
     this.#currentSortType = SortType.DAY;
-    this.#eventPointNewPresenter.init();
+    this.#eventPointNewPresenter.init(this.destinations, this.offers);
   }
 
   #handleModeChange = () => {
@@ -137,7 +145,7 @@ export default class TripPresenter {
 
   #renderEventPoint = (eventPoint) => {
     const eventPointPresenter = new EventPointPresenter(this.#eventsListComponent, this.#handleViewAction, this.#handleModeChange);
-    eventPointPresenter.init(eventPoint);
+    eventPointPresenter.init(eventPoint, this.destinations, this.offers);
     this.#eventPresenter.set(eventPoint.id, eventPointPresenter);
   }
 

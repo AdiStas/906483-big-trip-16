@@ -1,7 +1,22 @@
 import EventEditView from '../view/event-edit-view';
 import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render.js';
-import {UserAction, UpdateType, KEYCODE} from '../const.js';
+import {UserAction, UpdateType, KeyCode, TYPES} from '../const.js';
+import {getCurrentDate} from '../utils/common';
+
+const BLANK_EVENT_POINT = {
+  price: 0,
+  dateFrom: getCurrentDate('YYYY/MM/DD HH:mm'),
+  dateTo: getCurrentDate('YYYY/MM/DD HH:mm'),
+  destination: {
+    name: '',
+    description: '',
+    pictures: [],
+  },
+  offers: [],
+  type: TYPES[0],
+  isFavorite: false,
+};
 
 export default class EventPointNewPresenter {
   #eventPointListContainer = null;
@@ -13,12 +28,12 @@ export default class EventPointNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = () => {
+  init = (destinations, offers) => {
     if (this.#eventPointEditComponent !== null) {
       return;
     }
 
-    this.#eventPointEditComponent = new EventEditView();
+    this.#eventPointEditComponent = new EventEditView(BLANK_EVENT_POINT, destinations, offers);
     this.#eventPointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventPointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
@@ -52,7 +67,7 @@ export default class EventPointNewPresenter {
   }
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === KEYCODE.ESCAPE || evt.key === KEYCODE.ESC) {
+    if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
       evt.preventDefault();
       this.destroy();
     }

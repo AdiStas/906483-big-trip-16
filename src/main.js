@@ -26,16 +26,24 @@ const siteMainElementContainer = siteMainElement.querySelector('.page-body__cont
 const tripPresenter = new TripPresenter(siteMainElementContainer, eventPointsModel, filterModel);
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, eventPointsModel);
 
+let statisticsComponent = null;
+
+const handleEventPointCreate = () => {
+  filterPresenter.destroy();
+  filterPresenter.init();
+  tripPresenter.destroy();
+  tripPresenter.init();
+  tripPresenter.createEventPoint();
+};
+
 const addBtn = document.querySelector('.trip-main__event-add-btn');
 addBtn.setAttribute('disabled', '');
-
-let statisticsComponent = null;
 
 const setAddBtnActiveState = () => {
   addBtn.removeAttribute('disabled');
   addBtn.addEventListener('click', (evt) => {
     evt.preventDefault();
-    tripPresenter.createEventPoint();
+    handleEventPointCreate();
   });
 };
 

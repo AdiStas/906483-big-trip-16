@@ -14,7 +14,11 @@ export const TYPES = [
   'Restaurant',
 ];
 
-export const KEYCODE = {
+export const AUTHORIZATION = 'Basic skdjwoeut47tg';
+
+export const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
+
+export const KeyCode = {
   ESCAPE: 'Escape',
   ESC: 'Esc',
 };
@@ -54,7 +58,3 @@ export const ChartType = {
   TYPE: 'type',
   TIME: 'time',
 };
-
-export const AUTHORIZATION = 'Basic skdjwoeut47tg';
-
-export const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';

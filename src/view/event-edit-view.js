@@ -1,24 +1,10 @@
 import {TYPES} from '../const.js';
-import {getCurrentDate, getDateByFormat} from '../utils/common';
+import {getDateByFormat} from '../utils/common';
 import SmartView from './smart-view';
 import flatpickr from 'flatpickr';
 import dayjs from 'dayjs';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-
-const BLANK_EVENT_POINT = {
-  price: 0,
-  dateFrom: getCurrentDate('YYYY/MM/DD HH:mm'),
-  dateTo: getCurrentDate('YYYY/MM/DD HH:mm'),
-  destination: {
-    description: '',
-    name: '',
-    pictures: [],
-  },
-  offers: [],
-  type: TYPES[0],
-  isFavorite: false,
-};
 
 const createEventTypesListTemplate = (type) => TYPES.map((item) => {
   const checked = item.toLowerCase() === type.toLowerCase() ? 'checked' : '';
@@ -37,15 +23,17 @@ const createEventTypesListTemplate = (type) => TYPES.map((item) => {
       </label>
     </div>`);
 }).join('');
-
-const createEventOffersListTemplate = (offers) => {
-  const availableOffers = offers.map((item) => (
-    `<div class="event__offer-selector">
+const createEventOffersListTemplate = (type, offers, defaultOffers) => {
+  const offersFilteredByType = defaultOffers.find((item) => item.type === type).offers;
+  const availableOffers = offersFilteredByType.map((item) => {
+    const checked = offers.some((i) => i.title === item.title) ? 'checked' : '';
+    return (`<div class="event__offer-selector">
       <input
         class="event__offer-checkbox  visually-hidden"
         id="event-offer-${item.title.toLowerCase()}-1"
         type="checkbox"
-        name="event-offer-${item.title.toLowerCase()}">
+        name="event-offer-${item.title.toLowerCase()}"
+        ${checked}>
       <label
         class="event__offer-label"
         for="event-offer-${item.title.toLowerCase()}-1">
@@ -59,10 +47,11 @@ const createEventOffersListTemplate = (offers) => {
           ${item.price}
         </span>
       </label>
-    </div>`))
+    </div>`);
+  })
     .join('');
 
-  if (offers.length > 0) {
+  if (availableOffers.length > 0) {
     return `<section class="event__section  event__section--offers">
               <h3 class="event__section-title  event__section-title--offers">Offers</h3>
               <div class="event__available-offers">
@@ -73,8 +62,7 @@ const createEventOffersListTemplate = (offers) => {
     return '';
   }
 };
-const createEventDestinationOptionsTemplate = () => '';
-// const createEventDestinationOptionsTemplate = () => DESTINATIONS.map((item) => `<option value="${item.name}"></option>`).join('');
+const createEventDestinationOptionsTemplate = (destinationsList) => destinationsList.map((item) => `<option value="${item.name}"></option>`).join('');
 const createEventPicturesTemplate = (destination) => {
   if (destination.pictures.length > 0) {
     const pictures = destination.pictures.map((item) => `<img class="event__photo" src="${item.src}" alt="Event photo">`).join('');
@@ -98,7 +86,7 @@ const createEventDestinationTemplate = (destination) => {
     return '';
   }
 };
-export const createEventEditTemplate = (eventPoint = {}) => {
+export const createEventEditTemplate = (eventPoint = {}, destinationsList, defaultOffers) => {
   const {
     price,
     dateFrom,
@@ -109,10 +97,9 @@ export const createEventEditTemplate = (eventPoint = {}) => {
   } = eventPoint;
 
   const eventTypeTemplate = createEventTypesListTemplate(type);
-  const eventOfferTemplate = createEventOffersListTemplate(offers);
-  const eventDestinationOptionsTemplate = createEventDestinationOptionsTemplate();
+  const eventOfferTemplate = createEventOffersListTemplate(type, offers, defaultOffers);
+  const eventDestinationOptionsTemplate = createEventDestinationOptionsTemplate(destinationsList);
   const eventDestinationTemplate = createEventDestinationTemplate(destination);
-
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -175,15 +162,18 @@ export default class EventEditView extends SmartView {
   #datepickerDateFrom = null;
   #datepickerDateTo = null;
 
-  constructor(eventPoint = BLANK_EVENT_POINT) {
+  constructor(eventPoint, destinations, offers) {
     super();
     this._data = EventEditView.parseEventPointToData(eventPoint);
+    this._destinations = destinations;
+    this._offers = offers;
+
     this.#setInnerHandlers();
     this.#setDatepicker();
   }
 
   get template() {
-    return createEventEditTemplate(this._data);
+    return createEventEditTemplate(this._data, this._destinations, this._offers);
   }
 
   removeElement = () => {
@@ -267,7 +257,7 @@ export default class EventEditView extends SmartView {
     this.updateData({
       type: eventType,
     });
-    this.#offerChangeHandler(eventType);
+    createEventOffersListTemplate(eventType, [], this._offers);
   }
 
   #dateFromChangeHandler = ([userDate]) => {
@@ -282,25 +272,28 @@ export default class EventEditView extends SmartView {
     },true);
   }
 
-  #offerChangeHandler = (type) => {
+  #offerChangeHandler = () => {
     this.updateData({
-      // offers: OFFERS.find((item) => item.type === type).offers,
       offers: [],
     });
   }
 
   #destinationChangeHandler = (evt) => {
-    const destinationName = evt.target.value;
+    let destinationName = evt.target.value;
     if (!destinationName) {
       return;
     }
+
+    const value = this._destinations.some((item) => item.name === evt.target.value);
+    if (!value) {
+      destinationName = this._destinations[0].name;
+    }
+
     this.updateData({
       destination: {
         name: destinationName,
-        // description: DESTINATIONS.find((item) => item.name === destinationName).description,
-        description: [],
-        // pictures: DESTINATIONS.find((item) => item.name === destinationName).pictures,
-        pictures: [],
+        description: this._destinations.find((item) => item.name === destinationName).description,
+        pictures: this._destinations.find((item) => item.name === destinationName).pictures,
       }
     });
   }

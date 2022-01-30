@@ -4,6 +4,8 @@ import {UpdateType} from '../const.js';
 export default class EventPointsModel extends AbstractObservable {
   #apiService = null;
   #eventPoints = [];
+  #offers = [];
+  #destinations = [];
 
   constructor(apiService) {
     super();
@@ -14,14 +16,24 @@ export default class EventPointsModel extends AbstractObservable {
     return this.#eventPoints;
   }
 
+  get offers() {
+    return this.#offers;
+  }
+
+  get destinations() {
+    return this.#destinations;
+  }
+
   init = async () => {
     try {
       const eventPoints = await this.#apiService.eventPoints;
       this.#eventPoints = eventPoints.map(this.#adaptToClient);
+      this.#destinations = await this.#apiService.destinations;
+      this.#offers = await this.#apiService.offers;
     } catch (e) {
       this.#eventPoints = [];
+      // todo добавить обработку ошибок offers и destinations
     }
-
     this._notify(UpdateType.INIT);
   }
 
