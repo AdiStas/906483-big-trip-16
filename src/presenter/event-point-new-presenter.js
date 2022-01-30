@@ -1,5 +1,4 @@
 import EventEditView from '../view/event-edit-view';
-import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType, KeyCode, TYPES} from '../const.js';
 import {getCurrentDate} from '../utils/common';
@@ -62,7 +61,7 @@ export default class EventPointNewPresenter {
     this.#changeData(
       UserAction.ADD_EVENT_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...eventPoint},
+      eventPoint,
     );
     this.destroy();
   }
