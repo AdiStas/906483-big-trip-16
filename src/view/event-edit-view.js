@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const createEventTypesListTemplate = (type) => TYPES.map((item) => {
+const createEventTypesListTemplate = (type, isDisabled) => TYPES.map((item) => {
   const checked = item.toLowerCase() === type ? 'checked' : '';
   return (`<div class="event__type-item">
       <input
@@ -15,7 +15,8 @@ const createEventTypesListTemplate = (type) => TYPES.map((item) => {
         type="radio"
         name="event-type"
         value="${item.toLowerCase()}"
-        ${checked}>
+        ${checked}
+        ${isDisabled ? 'disabled' : ''}>
       <label
         class="event__type-label  event__type-label--${item.toLowerCase()}"
         for="event-type-${item.toLowerCase()}-1">
@@ -24,7 +25,7 @@ const createEventTypesListTemplate = (type) => TYPES.map((item) => {
     </div>`);
 }).join('');
 
-const createEventOffersListTemplate = (type, offers, defaultOffers) => {
+const createEventOffersListTemplate = (type, offers, defaultOffers, isDisabled) => {
   const offersFilteredByType = defaultOffers.find((item) => item.type === type)?.offers;
   const isChecked = (id) => offers.some((item) => item.id === id);
   let availableOffers = [];
@@ -37,7 +38,8 @@ const createEventOffersListTemplate = (type, offers, defaultOffers) => {
         type="checkbox"
         name="event-offer-${item.title.toLowerCase()}"
         data-offer-id="${item.id}"
-        ${isChecked(item.id) ? 'checked' : ''}>
+        ${isChecked(item.id) ? 'checked' : ''}
+        ${isDisabled ? 'disabled' : ''}>
       <label
         class="event__offer-label"
         for="event-offer-${item.title.toLowerCase()}-${item.id}">
@@ -97,10 +99,13 @@ export const createEventEditTemplate = (eventPoint, destinationsList, offersList
     destination,
     offers,
     type,
+    isDisabled,
+    isSaving,
+    isDeleting,
   } = eventPoint;
 
-  const eventTypeTemplate = createEventTypesListTemplate(type);
-  const eventOfferTemplate = createEventOffersListTemplate(type, offers, offersList);
+  const eventTypeTemplate = createEventTypesListTemplate(type, isDisabled);
+  const eventOfferTemplate = createEventOffersListTemplate(type, offers, offersList, isDisabled);
   const eventDestinationOptionsTemplate = createEventDestinationOptionsTemplate(destinationsList);
   const eventDestinationTemplate = createEventDestinationTemplate(destination);
 
@@ -112,7 +117,7 @@ export const createEventEditTemplate = (eventPoint, destinationsList, offersList
                       <span class="visually-hidden">Choose event type</span>
                       <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
                     </label>
-                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
@@ -126,7 +131,13 @@ export const createEventEditTemplate = (eventPoint, destinationsList, offersList
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type.toLowerCase()}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+                    <input
+                      class="event__input event__input--destination"
+                      id="event-destination-1" type="text"
+                      name="event-destination"
+                      value="${destination.name}"
+                      list="destination-list-1"
+                      ${isDisabled ? 'disabled' : ''}>
                     <datalist id="destination-list-1">
                       ${eventDestinationOptionsTemplate}
                     </datalist>
@@ -134,10 +145,17 @@ export const createEventEditTemplate = (eventPoint, destinationsList, offersList
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateByFormat(dateFrom, 'YY/MM/DD HH:mm')}">
+                    <input
+                      class="event__input event__input--time"
+                      id="event-start-time-1"
+                      type="text"
+                      name="event-start-time"
+                      value="${getDateByFormat(dateFrom, 'YY/MM/DD HH:mm')}"
+                      ${isDisabled ? 'disabled' : ''}>
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateByFormat(dateTo, 'YY/MM/DD HH:mm')}">
+                    <input
+                      class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateByFormat(dateTo, 'YY/MM/DD HH:mm')}">
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -148,9 +166,21 @@ export const createEventEditTemplate = (eventPoint, destinationsList, offersList
                     <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
                   </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
-                  <button class="event__rollup-btn" type="button">
+                  <button
+                    class="event__save-btn  btn  btn--blue"
+                    type="submit"
+                    ${isDisabled ? 'disabled' : ''}
+                  >
+                    ${isSaving ? 'Saving...' : 'Save'}
+                  </button>
+                  <button
+                    class="event__reset-btn"
+                    type="reset"
+                    ${isDisabled ? 'disabled' : ''}
+                  >
+                    ${isDeleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                  <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
                     <span class="visually-hidden">Open event</span>
                   </button>
                 </header>
@@ -343,6 +373,19 @@ export default class EventEditView extends SmartView {
     this._callback.deleteClick(EventEditView.parseDataToEventPoint(this._data));
   }
 
-  static parseEventPointToData = (eventPoint) => ({...eventPoint});
-  static parseDataToEventPoint = (data) => ({...data})
+  static parseEventPointToData = (eventPoint) => ({...eventPoint,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+  });
+
+  static parseDataToEventPoint = (data) => {
+    const eventPoint = {...data};
+
+    delete eventPoint.isDisabled;
+    delete eventPoint.isSaving;
+    delete eventPoint.isDeleting;
+
+    return eventPoint;
+  }
 }

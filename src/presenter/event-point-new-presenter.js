@@ -53,6 +53,25 @@ export default class EventPointNewPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving = () => {
+    this.#eventPointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#eventPointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventPointEditComponent.shake(resetFormState);
+  }
+
   #handleEditCloseClick = () => {
     this.destroy();
   }
@@ -63,7 +82,6 @@ export default class EventPointNewPresenter {
       UpdateType.MINOR,
       eventPoint,
     );
-    this.destroy();
   }
 
   #handleDeleteClick = () => {
