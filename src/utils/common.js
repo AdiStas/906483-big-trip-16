@@ -1,11 +1,6 @@
 import dayjs from 'dayjs';
 import {DAY, HOUR} from '../const';
 
-export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
 export const getCurrentDate = (format) => dayjs().format(format);
 export const getDateByFormat = (date, format = 'DD.MM.YYYY') => dayjs(date).format(format);
 export const calculateDatesDiff = (dateFrom, dateTo) => {
@@ -22,4 +17,3 @@ export const calculateDatesDiff = (dateFrom, dateTo) => {
   }
   return `${formatTime(daysDiff)}D ${formatTime(hoursDiff)}H ${formatTime(minutesDiff)}M`;
 };
-

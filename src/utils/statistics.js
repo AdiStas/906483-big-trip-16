@@ -9,29 +9,23 @@ dayjs.extend(duration);
 const getUniqTitles = (eventPoints) => {
   let titles = new Set;
   eventPoints.forEach((item) => {
-    titles.add(item.type.title);
+    titles.add(item.type);
   });
   titles = [...titles];
   return titles;
 };
 
-const getArraysFilteredByType = (titles, eventPoints) => {
-  const arraysFilteredByType = [];
-  titles.forEach((item) => {
-    arraysFilteredByType.push(eventPoints.filter((i) => i.type.title === item));
-  });
-  return arraysFilteredByType;
-};
+const getEventPointsFilteredByType = (titles, eventPoints) => titles.map((item) => eventPoints.filter((i) => i.type === item));
 
 const getSortedData = (titles, values) => {
-  const arrayOfObj = titles.map((item, index) => ({
+  const items = titles.map((item, index) => ({
     label: item,
     data: values[index] || 0
   }));
-  const sortedArrayOfObj = arrayOfObj.sort((a, b) => b.data - a.data);
+  const sortedItems = items.sort((a, b) => b.data - a.data);
   const labels = [];
   const data = [];
-  sortedArrayOfObj.forEach((item) => {
+  sortedItems.forEach((item) => {
     labels.push(item.label);
     data.push(item.data);
   });
@@ -61,22 +55,21 @@ const valueFormat = (val, type) => {
 export const renderChart = (ctx, eventPoints, type) => {
   const titles = getUniqTitles(eventPoints);
   const titlesToUpperCase = titles.map((item) => item.toUpperCase());
-  const arraysFilteredByType = getArraysFilteredByType(titles, eventPoints);
-
+  const eventPointsFilteredByType = getEventPointsFilteredByType(titles, eventPoints);
   let values = [];
 
   if (type === ChartType.MONEY) {
-    arraysFilteredByType.forEach((item) => {
+    eventPointsFilteredByType.forEach((item) => {
       values.push(item.reduce((accumulator, currentValue) => accumulator + currentValue.price, 0));
     });
   }
 
   if (type === ChartType.TYPE) {
-    values = arraysFilteredByType.map((item) => item.length);
+    values = eventPointsFilteredByType.map((item) => item.length);
   }
 
   if (type === ChartType.TIME) {
-    const durations = arraysFilteredByType.map((item) => item.map((i) => ({
+    const durations = eventPointsFilteredByType.map((item) => item.map((i) => ({
       type: i.type.title,
       duration: i.dateTo.valueOf() - i.dateFrom.valueOf(),
     })));

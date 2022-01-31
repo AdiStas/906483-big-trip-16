@@ -1,5 +1,5 @@
 import {remove, render, replace} from '../utils/render';
-import {KEYCODE} from '../const';
+import {KeyCode} from '../const';
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
 import {UserAction, UpdateType} from '../const';
@@ -27,14 +27,14 @@ export default class EventPointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (eventPoint) => {
+  init = (eventPoint, destinations, offers) => {
     this.#eventPoint = eventPoint;
 
     const prevEventPointComponent = this.#eventPointComponent;
     const prevEventPointEditComponent = this.#eventPointEditComponent;
 
     this.#eventPointComponent = new EventView(eventPoint);
-    this.#eventPointEditComponent = new EventEditView(eventPoint);
+    this.#eventPointEditComponent = new EventEditView(eventPoint, destinations, offers);
 
     this.#eventPointComponent.setEditClickHandler(this.#handleEditClick);
     this.#eventPointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -85,7 +85,7 @@ export default class EventPointPresenter {
   };
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === KEYCODE.ESCAPE || evt.key === KEYCODE.ESC) {
+    if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
       evt.preventDefault();
       this.#eventPointEditComponent.reset(this.#eventPoint);
       this.#replaceFormToEventPoint();

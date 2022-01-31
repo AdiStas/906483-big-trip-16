@@ -1,14 +1,14 @@
 import EventsListView from '../view/events-list-view';
 import SortingView from '../view/sorting-view';
 import NoEventView from '../view/no-event-view';
-
-import {remove, render, RenderPosition} from '../utils/render';
-import EventPointPresenter from './event-point-presenter';
-import {filter} from '../utils/filter';
-import {SortType, UpdateType, UserAction, FilterType} from '../const';
-import {sortEventPointTime, sortEventPointPrice, sortEventPointDay} from '../utils/event-point';
-import EventPointNewPresenter from './event-point-new-presenter';
 import TripEventsView from '../view/trip-events-view';
+import LoadingView from '../view/loading-view';
+import EventPointPresenter from './event-point-presenter';
+import EventPointNewPresenter from './event-point-new-presenter';
+import {remove, render, RenderPosition} from '../utils/render';
+import {filter} from '../utils/filter';
+import {sortEventPointTime, sortEventPointPrice, sortEventPointDay} from '../utils/event-point';
+import {SortType, UpdateType, UserAction, FilterType} from '../const';
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -17,6 +17,7 @@ export default class TripPresenter {
 
   #tripComponent = new TripEventsView();
   #eventsListComponent = new EventsListView();
+  #loadingComponent = new LoadingView();
   #noEventComponent = null;
   #sortComponent = null;
 
@@ -24,6 +25,7 @@ export default class TripPresenter {
   #eventPointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor(tripContainer, eventPointsModel, filterModel) {
     this.#tripContainer = tripContainer;
@@ -47,23 +49,25 @@ export default class TripPresenter {
     return filteredEventPoints;
   }
 
+  get destinations() {
+    return this.#eventPointsModel.destinations;
+  }
+
+  get offers() {
+    return this.#eventPointsModel.offers;
+  }
+
   init = () => {
     this.#eventPointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
     render(this.#tripContainer, this.#tripComponent);
 
-    if (this.#eventPointsModel.eventPoints.length > 0) {
-      this.#eventPointsModel.eventPoints.sort(sortEventPointDay);
+    this.#eventPointsModel.eventPoints.sort(sortEventPointDay);
 
-      render(this.#tripContainer, this.#tripComponent);
-      render(this.#tripComponent, this.#eventsListComponent);
-      this.#renderTrip();
-
-      return;
-    }
-
-    this.#renderNoEventPoints();
+    render(this.#tripContainer, this.#tripComponent);
+    render(this.#tripComponent, this.#eventsListComponent);
+    this.#renderTrip();
   }
 
   destroy = () => {
@@ -78,7 +82,7 @@ export default class TripPresenter {
 
   createEventPoint = () => {
     this.#currentSortType = SortType.DAY;
-    this.#eventPointNewPresenter.init();
+    this.#eventPointNewPresenter.init(this.destinations, this.offers);
   }
 
   #handleModeChange = () => {
@@ -103,7 +107,7 @@ export default class TripPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#eventPresenter.get(data.id).init(data);
+        this.#eventPresenter.get(data.id).init(data, this.destinations, this.offers);
         break;
       case UpdateType.MINOR:
         this.#clearTrip();
@@ -112,6 +116,11 @@ export default class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearTrip(true);
+        this.#renderTrip();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderTrip();
         break;
     }
@@ -136,12 +145,16 @@ export default class TripPresenter {
 
   #renderEventPoint = (eventPoint) => {
     const eventPointPresenter = new EventPointPresenter(this.#eventsListComponent, this.#handleViewAction, this.#handleModeChange);
-    eventPointPresenter.init(eventPoint);
+    eventPointPresenter.init(eventPoint, this.destinations, this.offers);
     this.#eventPresenter.set(eventPoint.id, eventPointPresenter);
   }
 
   #renderEventPoints = (eventPoints) => {
     eventPoints.forEach((eventPoint) => this.#renderEventPoint(eventPoint));
+  }
+
+  #renderLoading = () => {
+    render(this.#tripComponent, this.#loadingComponent, RenderPosition.AFTERBEGIN);
   }
 
   #renderNoEventPoints = () => {
@@ -155,6 +168,7 @@ export default class TripPresenter {
     this.#eventPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noEventComponent) {
       remove(this.#noEventComponent);
@@ -166,6 +180,11 @@ export default class TripPresenter {
   }
 
   #renderTrip = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const eventPoints = this.eventPoints;
     const eventPointCount = eventPoints.length;
 
