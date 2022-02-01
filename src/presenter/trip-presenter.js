@@ -41,6 +41,8 @@ export default class TripPresenter {
     const filteredEventPoints = filter[this.#filterType](eventPoints);
 
     switch (this.#currentSortType) {
+      case SortType.DAY:
+        return filteredEventPoints.sort(sortEventPointDay);
       case SortType.TIME:
         return filteredEventPoints.sort(sortEventPointTime);
       case SortType.PRICE:

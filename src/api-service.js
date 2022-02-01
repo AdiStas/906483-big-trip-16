@@ -55,12 +55,10 @@ export default class ApiService {
     return parsedResponse;
   }
 
-  deleteEventPoint = async (eventPoint) => {
-    return await this.#load({
-      url: `points/${eventPoint.id}`,
-      method: Method.DELETE,
-    });
-  }
+  deleteEventPoint = async (eventPoint) => await this.#load({
+    url: `points/${eventPoint.id}`,
+    method: Method.DELETE,
+  })
 
   #load = async ({
     url,

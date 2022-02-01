@@ -40,7 +40,7 @@ export default class EventPointPresenter {
     const prevEventPointEditComponent = this.#eventPointEditComponent;
 
     this.#eventPointComponent = new EventView(eventPoint);
-    this.#eventPointEditComponent = new EventEditView(eventPoint, destinations, offers);
+    this.#eventPointEditComponent = new EventEditView(eventPoint, destinations, offers, this.#mode);
 
     this.#eventPointComponent.setEditClickHandler(this.#handleEditClick);
     this.#eventPointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);

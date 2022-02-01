@@ -1,15 +1,14 @@
 import EventEditView from '../view/event-edit-view';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType, KeyCode, TYPES} from '../const.js';
-import {getCurrentDate} from '../utils/common';
 
 const BLANK_EVENT_POINT = {
-  price: 0,
-  dateFrom: getCurrentDate('YYYY/MM/DD HH:mm'),
-  dateTo: getCurrentDate('YYYY/MM/DD HH:mm'),
+  price: '',
+  dateFrom: null,
+  dateTo: null,
   destination: {
-    description: '',
     name: '',
+    description: null,
     pictures: [],
   },
   offers: [],
@@ -49,7 +48,7 @@ export default class EventPointNewPresenter {
 
     remove(this.#eventPointEditComponent);
     this.#eventPointEditComponent = null;
-
+    document.querySelector('.trip-main__event-add-btn').disabled = false;
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
