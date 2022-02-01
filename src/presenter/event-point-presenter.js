@@ -10,6 +10,12 @@ const Mode = {
   EDITING: 'editing',
 };
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 export default class EventPointPresenter {
   #eventPointListContainer = null;
   #changeData = null;
@@ -52,7 +58,8 @@ export default class EventPointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#eventPointEditComponent, prevEventPointEditComponent);
+      replace(this.#eventPointComponent, prevEventPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevEventPointComponent);
@@ -68,6 +75,39 @@ export default class EventPointPresenter {
     if (this.#mode !== Mode.DEFAULT) {
       this.#eventPointEditComponent.reset(this.#eventPoint);
       this.#replaceFormToEventPoint();
+    }
+  }
+
+  setViewState = (state) => {
+    if (this.#mode === Mode.DEFAULT) {
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#eventPointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this.#eventPointEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this.#eventPointEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this.#eventPointComponent.shake(resetFormState);
+        this.#eventPointEditComponent.shake(resetFormState);
+        break;
     }
   }
 
@@ -122,7 +162,6 @@ export default class EventPointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-    this.#replaceFormToEventPoint();
   }
 
   #handleDeleteClick = (eventPoint) => {

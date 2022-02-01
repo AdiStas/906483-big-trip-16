@@ -30,7 +30,7 @@ export default class EventPointsModel extends AbstractObservable {
       this.#eventPoints = eventPoints.map(this.#adaptToClient);
       this.#destinations = await this.#apiService.destinations;
       this.#offers = await this.#apiService.offers;
-    } catch (e) {
+    } catch (err) {
       this.#eventPoints = [];
       this.#destinations = [];
       this.#offers = [];
@@ -59,28 +59,34 @@ export default class EventPointsModel extends AbstractObservable {
     }
   }
 
-  addEventPoint = (updateType, update) => {
-    this.#eventPoints = [
-      update,
-      ...this.#eventPoints,
-    ];
-
-    this._notify(updateType, update);
+  addEventPoint = async (updateType, update) => {
+    try {
+      const response = await this.#apiService.addEventPoint(update);
+      const newEventPoint = this.#adaptToClient(response);
+      this.#eventPoints = [newEventPoint, ...this.#eventPoints];
+      this._notify(updateType, newEventPoint);
+    } catch (err) {
+      throw new Error('Can\'t add event point');
+    }
   }
 
-  deleteEventPoint = (updateType, update) => {
+  deleteEventPoint = async (updateType, update) => {
     const index = this.#eventPoints.findIndex((eventPoint) => eventPoint.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t delete unexisting eventPoint');
+      throw new Error('Can\'t delete unexisting task');
     }
 
-    this.#eventPoints = [
-      ...this.#eventPoints.slice(0, index),
-      ...this.#eventPoints.slice(index + 1),
-    ];
-
-    this._notify(updateType);
+    try {
+      await this.#apiService.deleteEventPoint(update);
+      this.#eventPoints = [
+        ...this.#eventPoints.slice(0, index),
+        ...this.#eventPoints.slice(index + 1),
+      ];
+      this._notify(updateType);
+    } catch (err) {
+      throw new Error('Can\'t delete task');
+    }
   }
 
   #adaptToClient = (eventPoint) => {

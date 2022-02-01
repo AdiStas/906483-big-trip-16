@@ -28,19 +28,20 @@ const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, even
 
 let statisticsComponent = null;
 
+const addBtn = document.querySelector('.trip-main__event-add-btn');
+addBtn.disabled = true;
+
 const handleEventPointCreate = () => {
   filterPresenter.destroy();
   filterPresenter.init();
   tripPresenter.destroy();
   tripPresenter.init();
   tripPresenter.createEventPoint();
+  addBtn.disabled = true;
 };
 
-const addBtn = document.querySelector('.trip-main__event-add-btn');
-addBtn.setAttribute('disabled', '');
-
 const setAddBtnActiveState = () => {
-  addBtn.removeAttribute('disabled');
+  addBtn.disabled = false;
   addBtn.addEventListener('click', (evt) => {
     evt.preventDefault();
     handleEventPointCreate();

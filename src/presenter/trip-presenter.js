@@ -3,7 +3,7 @@ import SortingView from '../view/sorting-view';
 import NoEventView from '../view/no-event-view';
 import TripEventsView from '../view/trip-events-view';
 import LoadingView from '../view/loading-view';
-import EventPointPresenter from './event-point-presenter';
+import EventPointPresenter, {State as EventPointPresenterViewState} from './event-point-presenter';
 import EventPointNewPresenter from './event-point-new-presenter';
 import {remove, render, RenderPosition} from '../utils/render';
 import {filter} from '../utils/filter';
@@ -41,6 +41,8 @@ export default class TripPresenter {
     const filteredEventPoints = filter[this.#filterType](eventPoints);
 
     switch (this.#currentSortType) {
+      case SortType.DAY:
+        return filteredEventPoints.sort(sortEventPointDay);
       case SortType.TIME:
         return filteredEventPoints.sort(sortEventPointTime);
       case SortType.PRICE:
@@ -90,16 +92,31 @@ export default class TripPresenter {
     this.#eventPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_EVENT_POINT:
-        this.#eventPointsModel.updateEventPoint(updateType, update);
+        this.#eventPresenter.get(update.id).setViewState(EventPointPresenterViewState.SAVING);
+        try {
+          await this.#eventPointsModel.updateEventPoint(updateType, update);
+        } catch (err) {
+          this.#eventPresenter.get(update.id).setViewState(EventPointPresenterViewState.ABORTING);
+        }
         break;
       case UserAction.ADD_EVENT_POINT:
-        this.#eventPointsModel.addEventPoint(updateType, update);
+        this.#eventPointNewPresenter.setSaving();
+        try {
+          await this.#eventPointsModel.addEventPoint(updateType, update);
+        } catch (err) {
+          this.#eventPointNewPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_EVENT_POINT:
-        this.#eventPointsModel.deleteEventPoint(updateType, update);
+        this.#eventPresenter.get(update.id).setViewState(EventPointPresenterViewState.DELETING);
+        try {
+          await this.#eventPointsModel.deleteEventPoint(updateType, update);
+        } catch (err) {
+          this.#eventPresenter.get(update.id).setViewState(EventPointPresenterViewState.ABORTING);
+        }
         break;
     }
   }
