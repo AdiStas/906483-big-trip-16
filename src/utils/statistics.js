@@ -20,7 +20,7 @@ const getEventPointsFilteredByType = (titles, eventPoints) => titles.map((item) 
 const getSortedData = (titles, values) => {
   const items = titles.map((item, index) => ({
     label: item,
-    data: values[index] || 0
+    data: values[index] || 0,
   }));
   const sortedItems = items.sort((a, b) => b.data - a.data);
   const labels = [];
