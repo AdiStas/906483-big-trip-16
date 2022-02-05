@@ -12,18 +12,18 @@ const siteHeaderElement = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');
 
 const eventPointsModel = new EventPointsModel(new ApiService(END_POINT, AUTHORIZATION));
-
 const filterModel = new FilterModel();
 
 const currentMenuItem = MenuItem.TABLE;
 const siteMenuComponent = new SiteMenuView(currentMenuItem);
 
+const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const siteNavElement = siteHeaderElement.querySelector('.trip-controls__navigation');
 const siteFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
 
 const siteMainElementContainer = siteMainElement.querySelector('.page-body__container');
 
-const tripPresenter = new TripPresenter(siteMainElementContainer, eventPointsModel, filterModel);
+const tripPresenter = new TripPresenter(siteMainElementContainer, eventPointsModel, filterModel, tripMainElement);
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, eventPointsModel);
 
 let statisticsComponent = null;

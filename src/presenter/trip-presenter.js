@@ -5,6 +5,7 @@ import TripEventsView from '../view/trip-events-view';
 import LoadingView from '../view/loading-view';
 import EventPointPresenter, {State as EventPointPresenterViewState} from './event-point-presenter';
 import EventPointNewPresenter from './event-point-new-presenter';
+import TripTotalPresenter from './trip-total-presenter';
 import {remove, render, RenderPosition} from '../utils/render';
 import {filter} from '../utils/filter';
 import {sortEventPointTime, sortEventPointPrice, sortEventPointDay} from '../utils/event-point';
@@ -12,6 +13,7 @@ import {SortType, UpdateType, UserAction, FilterType} from '../const';
 
 export default class TripPresenter {
   #tripContainer = null;
+  #tripMainElement = null;
   #eventPointsModel = null;
   #filterModel = null;
 
@@ -23,16 +25,19 @@ export default class TripPresenter {
 
   #eventPresenter = new Map();
   #eventPointNewPresenter = null;
+  #tripTotalPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(tripContainer, eventPointsModel, filterModel) {
+  constructor(tripContainer, eventPointsModel, filterModel, tripMainElement) {
     this.#tripContainer = tripContainer;
+    this.#tripMainElement = tripMainElement;
     this.#eventPointsModel = eventPointsModel;
     this.#filterModel = filterModel;
 
     this.#eventPointNewPresenter = new EventPointNewPresenter(this.#eventsListComponent, this.#handleViewAction);
+    this.#tripTotalPresenter = new TripTotalPresenter(this.#eventPointsModel, this.#tripMainElement);
   }
 
   get eventPoints() {
@@ -125,19 +130,23 @@ export default class TripPresenter {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#eventPresenter.get(data.id).init(data, this.destinations, this.offers);
+        this.#renderTripTotal();
         break;
       case UpdateType.MINOR:
         this.#clearTrip();
         this.#eventPointsModel.eventPoints.sort(sortEventPointDay);
+        this.#renderTripTotal();
         this.#renderTrip();
         break;
       case UpdateType.MAJOR:
         this.#clearTrip(true);
+        this.#renderTripTotal();
         this.#renderTrip();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#renderTripTotal();
         this.#renderTrip();
         break;
     }
@@ -151,6 +160,10 @@ export default class TripPresenter {
     this.#currentSortType = sortType;
     this.#clearTrip();
     this.#renderTrip();
+  }
+
+  #renderTripTotal = () => {
+    this.#tripTotalPresenter.init();
   }
 
   #renderSort = () => {

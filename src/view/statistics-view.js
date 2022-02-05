@@ -27,6 +27,10 @@ export default class StatisticsView extends SmartView {
 
     this._data = eventPoints;
 
+    if (this._data.length === 0) {
+      return;
+    }
+
     this.#setCharts();
   }
 
