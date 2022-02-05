@@ -16,6 +16,10 @@ export default class TripTotalPresenter {
       remove(this.#tripTotalView);
     }
 
+    if (this.#eventPointsModel.eventPoints.length === 0) {
+      return;
+    }
+
     this.#tripTotalView = new TripTotalView(this.#eventPointsModel.eventPoints);
     this.#renderTripTotal();
   }
