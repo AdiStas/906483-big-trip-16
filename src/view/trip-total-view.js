@@ -7,18 +7,18 @@ const SingleSeparator = '—';
 const CitiesCount = 3;
 
 const getTripTotalCities = (eventPoints) => {
-  let cities = new Set;
-  eventPoints.forEach((item) => cities.add(item.destination.name));
-  cities = [...cities];
+  const cities = eventPoints.map((item) => item.destination.name);
+  const tripStartCity = cities[0];
+  const tripIntermediateCity = cities[1];
+  const tripFinishCity = cities[cities.length - 1];
 
-  if (cities.length > CitiesCount) {
-    return `${cities[0]} ${MultiSeparator} ${cities[cities.length - 1]}`;
-  }
-  if (cities.length === CitiesCount) {
-    return `${cities[0]} ${SingleSeparator} ${cities[1]} ${SingleSeparator} ${cities[cities.length - 1]}`;
-  }
-  if (cities.length < CitiesCount) {
-    return `${cities[0]} ${SingleSeparator} ${cities[cities.length - 1]}`;
+  switch (true) {
+    case cities.length > CitiesCount:
+      return `${tripStartCity} ${MultiSeparator} ${tripFinishCity}`;
+    case cities.length === CitiesCount:
+      return `${tripStartCity} ${SingleSeparator} ${tripIntermediateCity} ${SingleSeparator} ${tripFinishCity}`;
+    case cities.length < CitiesCount:
+      return `${tripStartCity} ${SingleSeparator} ${tripFinishCity}`;
   }
 };
 
